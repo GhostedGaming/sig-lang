@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="Sig-Logo.png" alt="Sig-Logo" width="200"/>
+<img src="Sig-Logo.jpg" alt="Sig-Logo" width="200"/>
 
 # Sig-lang
 

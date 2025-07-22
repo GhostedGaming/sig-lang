@@ -1,0 +1,19 @@
+{
+    "files.associations": {
+        "string": "cpp",
+        "iosfwd": "cpp",
+        "charconv": "cpp",
+        "chrono": "cpp",
+        "expected": "cpp",
+        "optional": "cpp",
+        "format": "cpp",
+        "ranges": "cpp",
+        "ratio": "cpp",
+        "system_error": "cpp",
+        "array": "cpp",
+        "functional": "cpp",
+        "tuple": "cpp",
+        "type_traits": "cpp",
+        "utility": "cpp"
+    }
+}

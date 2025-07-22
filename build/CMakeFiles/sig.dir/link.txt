@@ -1,0 +1,1 @@
+/usr/bin/c++ -Wl,--dependency-file=CMakeFiles/sig.dir/link.d CMakeFiles/sig.dir/src/main.cpp.o CMakeFiles/sig.dir/src/lexer/private/lexer.cpp.o CMakeFiles/sig.dir/src/parser/private/parser.cpp.o CMakeFiles/sig.dir/src/codegen/private/codegen.cpp.o -o sig

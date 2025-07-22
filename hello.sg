@@ -1,7 +1,0 @@
-pub hello() {
-    print("Hello() was called!")
-}
-
-main() {
-    print("Hello world!");
-}
