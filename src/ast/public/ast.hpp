@@ -1,15 +1,24 @@
 #pragma once
 #include <variant>
 #include <vector>
+#include <string>
 
 struct ReturnStatement {
     int value;
 };
 
 struct PrintStatement {
-    int value;
+    std::variant<int, std::string> value;
+    
+    explicit PrintStatement(int val) : value(val) {}
+    explicit PrintStatement(const std::string& val) : value(val) {}
+    explicit PrintStatement(std::string&& val) : value(std::move(val)) {}
 };
 
-using ASTNode = std::variant<ReturnStatement, PrintStatement>;
+struct AsmStatement {
+    std::string value;
+};
+
+using ASTNode = std::variant<ReturnStatement, PrintStatement, AsmStatement>;
 
 using AST = std::vector<ASTNode>;

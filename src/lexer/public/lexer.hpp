@@ -6,8 +6,13 @@
 enum class TokenType {
     KeywordPrint,
     KeywordReturn,
+    KeywordAsm,
     IntegerLiteral,
     Semicolon,
+    RightParen,
+    LeftParen,
+    Quote,
+    String,
 };
 
 struct Token {

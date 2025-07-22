@@ -1,1 +1,1 @@
-return 0;
+asm("mov rax, 1");
