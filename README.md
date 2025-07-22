@@ -108,7 +108,7 @@ We welcome contributions! Sig is in early development and there's lots to do.
 - Standard library development
 - Documentation and examples
 - Testing and benchmarks
-- Platform support (Windows, macOS)
+- Platform support (Windows, macOS, Linux)
 
 ## 📚 Documentation
 
