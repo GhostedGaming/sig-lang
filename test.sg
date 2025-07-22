@@ -1,1 +1,20 @@
-asm("mov rax, 1");
+let x = "test X";
+let y = "test Y";
+let z = "test Z";
+let b = "test B";
+
+print("Hello World!");
+
+print(x);
+print(y);
+print(z);
+print(b);
+
+fn hello() {
+    print("Hello World!!!!!!");
+    print("Done!");
+}
+
+hello();
+
+return 0;

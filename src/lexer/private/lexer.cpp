@@ -84,6 +84,9 @@ static const std::unordered_map<std::string_view, TokenType> keywords = {
     {"print", TokenType::KeywordPrint}, // Print keyword
     {"asm", TokenType::KeywordAsm}, // Asm keyword
     {"//", TokenType::Comment}, // Comment keyword
+    {"pub", TokenType::KeywordPub}, // Public keyword
+    {"fn", TokenType::Function}, // Function keyword
+    {"let", TokenType::KeywordLet}, // Let keyword
 };
 
 // Inline functions for fast character classification
@@ -194,13 +197,14 @@ std::vector<Token> tokenize(const std::string& input) {
         else if (is_identifier_start(c)) {
             std::string_view identifier = read_identifier(input, i);
             
-            // Use unordered_map for O(1) keyword lookup
+            // Check if it's a keyword first
             auto it = keywords.find(identifier);
             if (it != keywords.end()) {
+                // It's a keyword - emit the keyword token
                 tokens.emplace_back(it->second);
             } else {
-                // Convert to string only when needed for error
-                report_error("Unknown keyword: " + std::string(identifier));
+                // It's a regular identifier (function name, variable, etc.)
+                tokens.emplace_back(TokenType::Identifier, std::string(identifier));
             }
         } 
         else if (is_digit(c)) {
@@ -219,7 +223,18 @@ std::vector<Token> tokenize(const std::string& input) {
         else if (c == ')') {
             tokens.emplace_back(TokenType::RightParen);
             ++i;
-        } 
+        }
+        else if (c == '{') {
+            tokens.emplace_back(TokenType::LeftBrace);
+            ++i;
+        }
+        else if (c == '}') {
+            tokens.emplace_back(TokenType::RightBrace);
+            ++i;
+        } else if (c == '=') {
+            tokens.emplace_back(TokenType::Equal);
+            ++i;
+        }
         else {
             report_error("Unexpected character: '" + std::string(1, c) + "'");
         }

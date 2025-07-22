@@ -229,6 +229,7 @@ CMakeFiles/sig.dir/src/codegen/private/codegen.cpp.o: /home/gavin/sig-language/s
   /usr/include/c++/15.1.1/initializer_list \
   /usr/include/c++/15.1.1/ios \
   /usr/include/c++/15.1.1/iosfwd \
+  /usr/include/c++/15.1.1/iostream \
   /usr/include/c++/15.1.1/istream \
   /usr/include/c++/15.1.1/limits \
   /usr/include/c++/15.1.1/locale \
@@ -576,17 +577,27 @@ CMakeFiles/sig.dir/src/main.cpp.o: /home/gavin/sig-language/src/main.cpp \
   /usr/include/asm/posix_types.h \
   /usr/include/asm/posix_types_64.h \
   /usr/include/asm/types.h \
+  /usr/include/asm/unistd.h \
+  /usr/include/asm/unistd_64.h \
   /usr/include/bits/atomic_wide_counter.h \
   /usr/include/bits/byteswap.h \
+  /usr/include/bits/confname.h \
   /usr/include/bits/cpu-set.h \
   /usr/include/bits/endian.h \
   /usr/include/bits/endianness.h \
+  /usr/include/bits/environments.h \
   /usr/include/bits/errno.h \
   /usr/include/bits/floatn-common.h \
   /usr/include/bits/floatn.h \
+  /usr/include/bits/getopt_core.h \
+  /usr/include/bits/getopt_posix.h \
   /usr/include/bits/libc-header-start.h \
+  /usr/include/bits/local_lim.h \
   /usr/include/bits/locale.h \
   /usr/include/bits/long-double.h \
+  /usr/include/bits/posix1_lim.h \
+  /usr/include/bits/posix2_lim.h \
+  /usr/include/bits/posix_opt.h \
   /usr/include/bits/pthread_stack_min-dynamic.h \
   /usr/include/bits/pthreadtypes-arch.h \
   /usr/include/bits/pthreadtypes.h \
@@ -600,6 +611,7 @@ CMakeFiles/sig.dir/src/main.cpp.o: /home/gavin/sig-language/src/main.cpp \
   /usr/include/bits/stdlib-float.h \
   /usr/include/bits/struct_mutex.h \
   /usr/include/bits/struct_rwlock.h \
+  /usr/include/bits/syscall.h \
   /usr/include/bits/thread-shared-types.h \
   /usr/include/bits/time.h \
   /usr/include/bits/time64.h \
@@ -632,17 +644,26 @@ CMakeFiles/sig.dir/src/main.cpp.o: /home/gavin/sig-language/src/main.cpp \
   /usr/include/bits/types/wint_t.h \
   /usr/include/bits/typesizes.h \
   /usr/include/bits/uintn-identity.h \
+  /usr/include/bits/uio_lim.h \
+  /usr/include/bits/unistd_ext.h \
   /usr/include/bits/waitflags.h \
   /usr/include/bits/waitstatus.h \
   /usr/include/bits/wchar.h \
   /usr/include/bits/wctype-wchar.h \
   /usr/include/bits/wordsize.h \
+  /usr/include/bits/xopen_lim.h \
   /usr/include/c++/15.1.1/array \
+  /usr/include/c++/15.1.1/backward/auto_ptr.h \
   /usr/include/c++/15.1.1/backward/binders.h \
   /usr/include/c++/15.1.1/bit \
   /usr/include/c++/15.1.1/bits/algorithmfwd.h \
+  /usr/include/c++/15.1.1/bits/align.h \
   /usr/include/c++/15.1.1/bits/alloc_traits.h \
+  /usr/include/c++/15.1.1/bits/allocated_ptr.h \
   /usr/include/c++/15.1.1/bits/allocator.h \
+  /usr/include/c++/15.1.1/bits/atomic_base.h \
+  /usr/include/c++/15.1.1/bits/atomic_lockfree_defines.h \
+  /usr/include/c++/15.1.1/bits/atomic_wait.h \
   /usr/include/c++/15.1.1/bits/basic_ios.h \
   /usr/include/c++/15.1.1/bits/basic_ios.tcc \
   /usr/include/c++/15.1.1/bits/basic_string.h \
@@ -685,6 +706,7 @@ CMakeFiles/sig.dir/src/main.cpp.o: /home/gavin/sig-language/src/main.cpp \
   /usr/include/c++/15.1.1/bits/ostream.h \
   /usr/include/c++/15.1.1/bits/ostream.tcc \
   /usr/include/c++/15.1.1/bits/ostream_insert.h \
+  /usr/include/c++/15.1.1/bits/out_ptr.h \
   /usr/include/c++/15.1.1/bits/parse_numbers.h \
   /usr/include/c++/15.1.1/bits/postypes.h \
   /usr/include/c++/15.1.1/bits/predefined_ops.h \
@@ -693,11 +715,16 @@ CMakeFiles/sig.dir/src/main.cpp.o: /home/gavin/sig-language/src/main.cpp \
   /usr/include/c++/15.1.1/bits/ranges_algobase.h \
   /usr/include/c++/15.1.1/bits/ranges_base.h \
   /usr/include/c++/15.1.1/bits/ranges_cmp.h \
+  /usr/include/c++/15.1.1/bits/ranges_uninitialized.h \
   /usr/include/c++/15.1.1/bits/ranges_util.h \
   /usr/include/c++/15.1.1/bits/refwrap.h \
   /usr/include/c++/15.1.1/bits/requires_hosted.h \
+  /usr/include/c++/15.1.1/bits/shared_ptr.h \
+  /usr/include/c++/15.1.1/bits/shared_ptr_atomic.h \
+  /usr/include/c++/15.1.1/bits/shared_ptr_base.h \
   /usr/include/c++/15.1.1/bits/sstream.tcc \
   /usr/include/c++/15.1.1/bits/std_abs.h \
+  /usr/include/c++/15.1.1/bits/std_mutex.h \
   /usr/include/c++/15.1.1/bits/stl_algo.h \
   /usr/include/c++/15.1.1/bits/stl_algobase.h \
   /usr/include/c++/15.1.1/bits/stl_bvector.h \
@@ -708,6 +735,7 @@ CMakeFiles/sig.dir/src/main.cpp.o: /home/gavin/sig-language/src/main.cpp \
   /usr/include/c++/15.1.1/bits/stl_iterator_base_funcs.h \
   /usr/include/c++/15.1.1/bits/stl_iterator_base_types.h \
   /usr/include/c++/15.1.1/bits/stl_pair.h \
+  /usr/include/c++/15.1.1/bits/stl_raw_storage_iter.h \
   /usr/include/c++/15.1.1/bits/stl_tempbuf.h \
   /usr/include/c++/15.1.1/bits/stl_uninitialized.h \
   /usr/include/c++/15.1.1/bits/stl_vector.h \
@@ -718,6 +746,7 @@ CMakeFiles/sig.dir/src/main.cpp.o: /home/gavin/sig-language/src/main.cpp \
   /usr/include/c++/15.1.1/bits/unicode-data.h \
   /usr/include/c++/15.1.1/bits/unicode.h \
   /usr/include/c++/15.1.1/bits/uniform_int_dist.h \
+  /usr/include/c++/15.1.1/bits/unique_ptr.h \
   /usr/include/c++/15.1.1/bits/uses_allocator.h \
   /usr/include/c++/15.1.1/bits/uses_allocator_args.h \
   /usr/include/c++/15.1.1/bits/utility.h \
@@ -726,6 +755,7 @@ CMakeFiles/sig.dir/src/main.cpp.o: /home/gavin/sig-language/src/main.cpp \
   /usr/include/c++/15.1.1/cctype \
   /usr/include/c++/15.1.1/cerrno \
   /usr/include/c++/15.1.1/charconv \
+  /usr/include/c++/15.1.1/climits \
   /usr/include/c++/15.1.1/clocale \
   /usr/include/c++/15.1.1/compare \
   /usr/include/c++/15.1.1/concepts \
@@ -739,8 +769,10 @@ CMakeFiles/sig.dir/src/main.cpp.o: /home/gavin/sig-language/src/main.cpp \
   /usr/include/c++/15.1.1/debug/assertions.h \
   /usr/include/c++/15.1.1/debug/debug.h \
   /usr/include/c++/15.1.1/exception \
+  /usr/include/c++/15.1.1/ext/aligned_buffer.h \
   /usr/include/c++/15.1.1/ext/alloc_traits.h \
   /usr/include/c++/15.1.1/ext/atomicity.h \
+  /usr/include/c++/15.1.1/ext/concurrence.h \
   /usr/include/c++/15.1.1/ext/numeric_traits.h \
   /usr/include/c++/15.1.1/ext/string_conversions.h \
   /usr/include/c++/15.1.1/ext/type_traits.h \
@@ -753,10 +785,13 @@ CMakeFiles/sig.dir/src/main.cpp.o: /home/gavin/sig-language/src/main.cpp \
   /usr/include/c++/15.1.1/istream \
   /usr/include/c++/15.1.1/limits \
   /usr/include/c++/15.1.1/locale \
+  /usr/include/c++/15.1.1/memory \
   /usr/include/c++/15.1.1/new \
   /usr/include/c++/15.1.1/numbers \
   /usr/include/c++/15.1.1/optional \
   /usr/include/c++/15.1.1/ostream \
+  /usr/include/c++/15.1.1/pstl/execution_defs.h \
+  /usr/include/c++/15.1.1/pstl/glue_memory_defs.h \
   /usr/include/c++/15.1.1/pstl/pstl_config.h \
   /usr/include/c++/15.1.1/span \
   /usr/include/c++/15.1.1/sstream \
@@ -793,7 +828,10 @@ CMakeFiles/sig.dir/src/main.cpp.o: /home/gavin/sig-language/src/main.cpp \
   /usr/include/gnu/stubs-64.h \
   /usr/include/gnu/stubs.h \
   /usr/include/libintl.h \
+  /usr/include/limits.h \
+  /usr/include/linux/close_range.h \
   /usr/include/linux/errno.h \
+  /usr/include/linux/limits.h \
   /usr/include/linux/posix_types.h \
   /usr/include/linux/sched/types.h \
   /usr/include/linux/stddef.h \
@@ -808,13 +846,18 @@ CMakeFiles/sig.dir/src/main.cpp.o: /home/gavin/sig-language/src/main.cpp \
   /usr/include/sys/cdefs.h \
   /usr/include/sys/select.h \
   /usr/include/sys/single_threaded.h \
+  /usr/include/sys/syscall.h \
   /usr/include/sys/types.h \
+  /usr/include/syscall.h \
   /usr/include/time.h \
+  /usr/include/unistd.h \
   /usr/include/wchar.h \
   /usr/include/wctype.h \
+  /usr/lib/gcc/x86_64-pc-linux-gnu/15.1.1/include/limits.h \
   /usr/lib/gcc/x86_64-pc-linux-gnu/15.1.1/include/stdarg.h \
   /usr/lib/gcc/x86_64-pc-linux-gnu/15.1.1/include/stddef.h \
-  /usr/lib/gcc/x86_64-pc-linux-gnu/15.1.1/include/stdint.h
+  /usr/lib/gcc/x86_64-pc-linux-gnu/15.1.1/include/stdint.h \
+  /usr/lib/gcc/x86_64-pc-linux-gnu/15.1.1/include/syslimits.h
 
 CMakeFiles/sig.dir/src/parser/private/parser.cpp.o: /home/gavin/sig-language/src/parser/private/parser.cpp \
   /home/gavin/sig-language/src/ast/public/ast.hpp \
@@ -832,17 +875,27 @@ CMakeFiles/sig.dir/src/parser/private/parser.cpp.o: /home/gavin/sig-language/src
   /usr/include/asm/posix_types.h \
   /usr/include/asm/posix_types_64.h \
   /usr/include/asm/types.h \
+  /usr/include/asm/unistd.h \
+  /usr/include/asm/unistd_64.h \
   /usr/include/bits/atomic_wide_counter.h \
   /usr/include/bits/byteswap.h \
+  /usr/include/bits/confname.h \
   /usr/include/bits/cpu-set.h \
   /usr/include/bits/endian.h \
   /usr/include/bits/endianness.h \
+  /usr/include/bits/environments.h \
   /usr/include/bits/errno.h \
   /usr/include/bits/floatn-common.h \
   /usr/include/bits/floatn.h \
+  /usr/include/bits/getopt_core.h \
+  /usr/include/bits/getopt_posix.h \
   /usr/include/bits/libc-header-start.h \
+  /usr/include/bits/local_lim.h \
   /usr/include/bits/locale.h \
   /usr/include/bits/long-double.h \
+  /usr/include/bits/posix1_lim.h \
+  /usr/include/bits/posix2_lim.h \
+  /usr/include/bits/posix_opt.h \
   /usr/include/bits/pthread_stack_min-dynamic.h \
   /usr/include/bits/pthreadtypes-arch.h \
   /usr/include/bits/pthreadtypes.h \
@@ -856,6 +909,7 @@ CMakeFiles/sig.dir/src/parser/private/parser.cpp.o: /home/gavin/sig-language/src
   /usr/include/bits/stdlib-float.h \
   /usr/include/bits/struct_mutex.h \
   /usr/include/bits/struct_rwlock.h \
+  /usr/include/bits/syscall.h \
   /usr/include/bits/thread-shared-types.h \
   /usr/include/bits/time.h \
   /usr/include/bits/time64.h \
@@ -888,17 +942,26 @@ CMakeFiles/sig.dir/src/parser/private/parser.cpp.o: /home/gavin/sig-language/src
   /usr/include/bits/types/wint_t.h \
   /usr/include/bits/typesizes.h \
   /usr/include/bits/uintn-identity.h \
+  /usr/include/bits/uio_lim.h \
+  /usr/include/bits/unistd_ext.h \
   /usr/include/bits/waitflags.h \
   /usr/include/bits/waitstatus.h \
   /usr/include/bits/wchar.h \
   /usr/include/bits/wctype-wchar.h \
   /usr/include/bits/wordsize.h \
+  /usr/include/bits/xopen_lim.h \
   /usr/include/c++/15.1.1/array \
+  /usr/include/c++/15.1.1/backward/auto_ptr.h \
   /usr/include/c++/15.1.1/backward/binders.h \
   /usr/include/c++/15.1.1/bit \
   /usr/include/c++/15.1.1/bits/algorithmfwd.h \
+  /usr/include/c++/15.1.1/bits/align.h \
   /usr/include/c++/15.1.1/bits/alloc_traits.h \
+  /usr/include/c++/15.1.1/bits/allocated_ptr.h \
   /usr/include/c++/15.1.1/bits/allocator.h \
+  /usr/include/c++/15.1.1/bits/atomic_base.h \
+  /usr/include/c++/15.1.1/bits/atomic_lockfree_defines.h \
+  /usr/include/c++/15.1.1/bits/atomic_wait.h \
   /usr/include/c++/15.1.1/bits/basic_ios.h \
   /usr/include/c++/15.1.1/bits/basic_ios.tcc \
   /usr/include/c++/15.1.1/bits/basic_string.h \
@@ -940,6 +1003,7 @@ CMakeFiles/sig.dir/src/parser/private/parser.cpp.o: /home/gavin/sig-language/src
   /usr/include/c++/15.1.1/bits/ostream.h \
   /usr/include/c++/15.1.1/bits/ostream.tcc \
   /usr/include/c++/15.1.1/bits/ostream_insert.h \
+  /usr/include/c++/15.1.1/bits/out_ptr.h \
   /usr/include/c++/15.1.1/bits/parse_numbers.h \
   /usr/include/c++/15.1.1/bits/postypes.h \
   /usr/include/c++/15.1.1/bits/predefined_ops.h \
@@ -948,10 +1012,15 @@ CMakeFiles/sig.dir/src/parser/private/parser.cpp.o: /home/gavin/sig-language/src
   /usr/include/c++/15.1.1/bits/ranges_algobase.h \
   /usr/include/c++/15.1.1/bits/ranges_base.h \
   /usr/include/c++/15.1.1/bits/ranges_cmp.h \
+  /usr/include/c++/15.1.1/bits/ranges_uninitialized.h \
   /usr/include/c++/15.1.1/bits/ranges_util.h \
   /usr/include/c++/15.1.1/bits/refwrap.h \
   /usr/include/c++/15.1.1/bits/requires_hosted.h \
+  /usr/include/c++/15.1.1/bits/shared_ptr.h \
+  /usr/include/c++/15.1.1/bits/shared_ptr_atomic.h \
+  /usr/include/c++/15.1.1/bits/shared_ptr_base.h \
   /usr/include/c++/15.1.1/bits/std_abs.h \
+  /usr/include/c++/15.1.1/bits/std_mutex.h \
   /usr/include/c++/15.1.1/bits/stl_algo.h \
   /usr/include/c++/15.1.1/bits/stl_algobase.h \
   /usr/include/c++/15.1.1/bits/stl_bvector.h \
@@ -962,6 +1031,7 @@ CMakeFiles/sig.dir/src/parser/private/parser.cpp.o: /home/gavin/sig-language/src
   /usr/include/c++/15.1.1/bits/stl_iterator_base_funcs.h \
   /usr/include/c++/15.1.1/bits/stl_iterator_base_types.h \
   /usr/include/c++/15.1.1/bits/stl_pair.h \
+  /usr/include/c++/15.1.1/bits/stl_raw_storage_iter.h \
   /usr/include/c++/15.1.1/bits/stl_tempbuf.h \
   /usr/include/c++/15.1.1/bits/stl_uninitialized.h \
   /usr/include/c++/15.1.1/bits/stl_vector.h \
@@ -972,6 +1042,7 @@ CMakeFiles/sig.dir/src/parser/private/parser.cpp.o: /home/gavin/sig-language/src
   /usr/include/c++/15.1.1/bits/unicode-data.h \
   /usr/include/c++/15.1.1/bits/unicode.h \
   /usr/include/c++/15.1.1/bits/uniform_int_dist.h \
+  /usr/include/c++/15.1.1/bits/unique_ptr.h \
   /usr/include/c++/15.1.1/bits/uses_allocator.h \
   /usr/include/c++/15.1.1/bits/uses_allocator_args.h \
   /usr/include/c++/15.1.1/bits/utility.h \
@@ -980,6 +1051,7 @@ CMakeFiles/sig.dir/src/parser/private/parser.cpp.o: /home/gavin/sig-language/src
   /usr/include/c++/15.1.1/cctype \
   /usr/include/c++/15.1.1/cerrno \
   /usr/include/c++/15.1.1/charconv \
+  /usr/include/c++/15.1.1/climits \
   /usr/include/c++/15.1.1/clocale \
   /usr/include/c++/15.1.1/compare \
   /usr/include/c++/15.1.1/concepts \
@@ -993,8 +1065,10 @@ CMakeFiles/sig.dir/src/parser/private/parser.cpp.o: /home/gavin/sig-language/src
   /usr/include/c++/15.1.1/debug/assertions.h \
   /usr/include/c++/15.1.1/debug/debug.h \
   /usr/include/c++/15.1.1/exception \
+  /usr/include/c++/15.1.1/ext/aligned_buffer.h \
   /usr/include/c++/15.1.1/ext/alloc_traits.h \
   /usr/include/c++/15.1.1/ext/atomicity.h \
+  /usr/include/c++/15.1.1/ext/concurrence.h \
   /usr/include/c++/15.1.1/ext/numeric_traits.h \
   /usr/include/c++/15.1.1/ext/string_conversions.h \
   /usr/include/c++/15.1.1/ext/type_traits.h \
@@ -1006,10 +1080,13 @@ CMakeFiles/sig.dir/src/parser/private/parser.cpp.o: /home/gavin/sig-language/src
   /usr/include/c++/15.1.1/istream \
   /usr/include/c++/15.1.1/limits \
   /usr/include/c++/15.1.1/locale \
+  /usr/include/c++/15.1.1/memory \
   /usr/include/c++/15.1.1/new \
   /usr/include/c++/15.1.1/numbers \
   /usr/include/c++/15.1.1/optional \
   /usr/include/c++/15.1.1/ostream \
+  /usr/include/c++/15.1.1/pstl/execution_defs.h \
+  /usr/include/c++/15.1.1/pstl/glue_memory_defs.h \
   /usr/include/c++/15.1.1/pstl/pstl_config.h \
   /usr/include/c++/15.1.1/span \
   /usr/include/c++/15.1.1/stdexcept \
@@ -1043,7 +1120,10 @@ CMakeFiles/sig.dir/src/parser/private/parser.cpp.o: /home/gavin/sig-language/src
   /usr/include/gnu/stubs-64.h \
   /usr/include/gnu/stubs.h \
   /usr/include/libintl.h \
+  /usr/include/limits.h \
+  /usr/include/linux/close_range.h \
   /usr/include/linux/errno.h \
+  /usr/include/linux/limits.h \
   /usr/include/linux/posix_types.h \
   /usr/include/linux/sched/types.h \
   /usr/include/linux/stddef.h \
@@ -1058,13 +1138,18 @@ CMakeFiles/sig.dir/src/parser/private/parser.cpp.o: /home/gavin/sig-language/src
   /usr/include/sys/cdefs.h \
   /usr/include/sys/select.h \
   /usr/include/sys/single_threaded.h \
+  /usr/include/sys/syscall.h \
   /usr/include/sys/types.h \
+  /usr/include/syscall.h \
   /usr/include/time.h \
+  /usr/include/unistd.h \
   /usr/include/wchar.h \
   /usr/include/wctype.h \
+  /usr/lib/gcc/x86_64-pc-linux-gnu/15.1.1/include/limits.h \
   /usr/lib/gcc/x86_64-pc-linux-gnu/15.1.1/include/stdarg.h \
   /usr/lib/gcc/x86_64-pc-linux-gnu/15.1.1/include/stddef.h \
-  /usr/lib/gcc/x86_64-pc-linux-gnu/15.1.1/include/stdint.h
+  /usr/lib/gcc/x86_64-pc-linux-gnu/15.1.1/include/stdint.h \
+  /usr/lib/gcc/x86_64-pc-linux-gnu/15.1.1/include/syslimits.h
 
 sig: /usr/lib/Scrt1.o \
   /usr/lib/crti.o \
@@ -1181,6 +1266,8 @@ CMakeFiles/sig.dir/src/codegen/private/codegen.cpp.o:
 /usr/include/c++/15.1.1/x86_64-pc-linux-gnu/bits/ctype_base.h:
 
 /usr/include/c++/15.1.1/x86_64-pc-linux-gnu/bits/cpu_defines.h:
+
+/usr/include/c++/15.1.1/x86_64-pc-linux-gnu/bits/c++locale.h:
 
 /usr/include/bits/types/wint_t.h:
 
@@ -1654,12 +1741,6 @@ CMakeFiles/sig.dir/src/codegen/private/codegen.cpp.o:
 
 /usr/include/c++/15.1.1/compare:
 
-/usr/include/c++/15.1.1/iostream:
-
-/usr/include/c++/15.1.1/bits/predefined_ops.h:
-
-/usr/include/c++/15.1.1/pstl/glue_memory_defs.h:
-
 /usr/include/c++/15.1.1/bits/shared_ptr_base.h:
 
 /usr/include/c++/15.1.1/memory:
@@ -1675,8 +1756,6 @@ CMakeFiles/sig.dir/src/codegen/private/codegen.cpp.o:
 /usr/include/c++/15.1.1/bits/stl_construct.h:
 
 /usr/include/c++/15.1.1/bits/stl_iterator_base_types.h:
-
-/usr/include/c++/15.1.1/x86_64-pc-linux-gnu/bits/c++locale.h:
 
 /usr/include/c++/15.1.1/bits/shared_ptr_atomic.h:
 
@@ -1711,6 +1790,12 @@ CMakeFiles/sig.dir/src/codegen/private/codegen.cpp.o:
 /usr/include/c++/15.1.1/bits/vector.tcc:
 
 /usr/include/c++/15.1.1/bits/version.h:
+
+/usr/include/c++/15.1.1/bits/predefined_ops.h:
+
+/usr/include/c++/15.1.1/pstl/glue_memory_defs.h:
+
+/usr/include/c++/15.1.1/iostream:
 
 /usr/include/c++/15.1.1/cctype:
 

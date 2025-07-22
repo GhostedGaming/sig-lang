@@ -14,6 +14,13 @@ enum class TokenType {
     Quote,
     String,
     Comment,
+    Function,
+    KeywordPub,
+    LeftBrace,
+    RightBrace,
+    Identifier,
+    KeywordLet,
+    Equal,
 };
 
 struct Token {
