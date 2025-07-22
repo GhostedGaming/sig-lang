@@ -35,9 +35,9 @@ Sig is a modern systems programming language that bridges the gap between high-l
 - [x] Linux system call integration
 
 ### Roadmap
-- [ ] Variables and basic types
+- [x] Variables and basic types
 - [ ] Control flow (if/else, loops)
-- [ ] Functions and procedures
+- [x] Functions and procedures
 - [ ] Structs and enums
 - [ ] Memory management
 - [ ] Module system
