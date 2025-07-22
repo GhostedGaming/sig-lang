@@ -80,9 +80,10 @@ static constexpr auto space_table = make_space_table();
 
 // Keyword lookup table
 static const std::unordered_map<std::string_view, TokenType> keywords = {
-    {"return", TokenType::KeywordReturn},
-    {"print", TokenType::KeywordPrint},
-    {"asm", TokenType::KeywordAsm},
+    {"return", TokenType::KeywordReturn}, // Return keyword
+    {"print", TokenType::KeywordPrint}, // Print keyword
+    {"asm", TokenType::KeywordAsm}, // Asm keyword
+    {"//", TokenType::Comment}, // Comment keyword
 };
 
 // Inline functions for fast character classification

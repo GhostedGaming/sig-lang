@@ -174,6 +174,8 @@ public:
             case TokenType::KeywordAsm:
                 parseAsmStatement(ast);
                 break;
+            case TokenType::Comment:
+                break; // Ignore comments
             default:
                 reportError("Unexpected token type");
         }

@@ -13,6 +13,7 @@ enum class TokenType {
     LeftParen,
     Quote,
     String,
+    Comment,
 };
 
 struct Token {
