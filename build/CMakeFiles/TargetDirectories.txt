@@ -1,3 +1,0 @@
-/home/gavin/sig-language/build/CMakeFiles/sig.dir
-/home/gavin/sig-language/build/CMakeFiles/edit_cache.dir
-/home/gavin/sig-language/build/CMakeFiles/rebuild_cache.dir
