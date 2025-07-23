@@ -36,7 +36,7 @@ Sig is a modern systems programming language that bridges the gap between high-l
 
 ### Roadmap
 - [x] Variables and basic types
-- [ ] Control flow (if/else, loops)
+- [x] Control flow (if/else, loops)
 - [x] Functions and procedures
 - [ ] Structs and enums
 - [ ] Memory management
@@ -47,17 +47,18 @@ Sig is a modern systems programming language that bridges the gap between high-l
 
 ### Prerequisites
 - CMake 3.15+
-- GCC/Clang with C++17 support
+- G++/Clang with C++17 support
 - NASM (for assembly)
 - Linux (currently supported platform)
+- ^^ If you do not have linux use wsl ^^
 
 ### Build from Source
 ```bash
-git clone https://github.com/yourusername/sig-language.git
+git clone https://github.com/GhostedGaming/sig-language.git
 cd sig-language
 mkdir build && cd build
 cmake ..
-make
+cmake --build build/
 ```
 
 ## 📖 Usage

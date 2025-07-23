@@ -1,0 +1,15 @@
+// Comment
+
+hello(); // Compiler supports hoisting
+
+fn hello() { // Another Comment
+    print("Hello world!"); // Functions Cannot Currently Return
+}
+
+let x = "Hello";
+
+print(x);
+
+asm("mov rax, 0"); // Unsafe Has No Checks Just Inserts It
+
+return 0;

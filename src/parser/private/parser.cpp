@@ -87,26 +87,28 @@ public:
      */
     void parseReturnStatement(AST& ast) {
         advance(); // Skip 'return' keyword
+        int value;
 
         // Expect integer literal
         if (!hasTokens() || peekToken().type != TokenType::IntegerLiteral) {
-            reportError("Expected integer literal after 'return'");
-        }
-
-        const auto& token = peekToken();
-        int value;
-
-        // Parse integer value with error checking
-        if (token.value.has_value()) {
-            value = parseInteger(token.value.value());
+            std::cerr << "Expected integer literal after 'return'\nDefaulting the return to 0\n";
+            value = 0;
         } else {
-            reportError("Integer literal missing value");
+            const auto& token = peekToken();
+            if (token.value.has_value()) {
+                value = parseInteger(token.value.value());
+            } else {
+                reportError("Integer literal missing value");
+            }
+            advance(); // Skip integer literal
         }
 
-        advance(); // Skip integer literal
-
-        // Expect semicolon terminator
-        expectToken(TokenType::Semicolon, "Expected semicolon after integer");
+        // Expect semicolon terminator (but handle gracefully if missing)
+        if (hasTokens() && peekToken().type == TokenType::Semicolon) {
+            advance(); // Skip semicolon
+        } else {
+            std::cerr << "Warning: Missing semicolon after return statement\n";
+        }
 
         // Add return statement to AST
         ast.emplace_back(ReturnStatement{value});
@@ -357,6 +359,12 @@ public:
         }
     }
 
+    void parseMultiComment(AST& ast) {
+        advance(); // Skip
+
+        expectToken(TokenType::EndMultilineComment, "Expected '*\\ after a multiline comment'");
+    }
+
     /**
      * Parse a list of statements until closing brace or end of input
      * Used for parsing function bodies and block statements
@@ -380,7 +388,6 @@ public:
             case TokenType::KeywordReturn:
                 parseReturnStatement(ast);
                 break;
-
             case TokenType::KeywordPrint:
                 parsePrintStatement(ast);
                 break;
@@ -395,9 +402,11 @@ public:
                 break;
 
             case TokenType::Comment:
-                advance(); // Skip comments
+                advance();
                 break;
-
+            case TokenType::MultilineComment:
+                parseMultiComment(ast);
+                break;
             case TokenType::Identifier:
                 // Look ahead to determine if it's a function call
                 if (hasTokens(2) && peekToken(1).type == TokenType::LeftParen) {

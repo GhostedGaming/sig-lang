@@ -4,23 +4,54 @@
 #include <optional>
 
 enum class TokenType {
+    // Keywords
     KeywordPrint,
     KeywordReturn,
     KeywordAsm,
-    IntegerLiteral,
-    Semicolon,
-    RightParen,
-    LeftParen,
-    Quote,
-    String,
-    Comment,
-    Function,
     KeywordPub,
+    KeywordLet,
+    KeywordIf,
+    KeywordElse,
+    KeywordElseIf,
+    KeywordWhile,
+    
+    // Literals
+    IntegerLiteral,
+    String,
+    
+    // Identifiers
+    Identifier,
+    Function,
+    
+    // Operators
+    Equal,
+    
+    // Logical Operators
+    And,           // &&
+    Or,            // ||
+    Not,           // !
+    EqualEqual,    // ==
+    NotEqual,      // !=
+    LessThan,      // <
+    LessThanEqual, // <=
+    GreaterThan,   // >
+    GreaterThanEqual, // >=
+    
+    // Delimiters
+    LeftParen,
+    RightParen,
     LeftBrace,
     RightBrace,
-    Identifier,
-    KeywordLet,
-    Equal,
+    Semicolon,
+    Quote,
+    
+    // Comments
+    Comment,
+    MultilineComment,
+    EndMultilineComment,
+    
+    // Special
+    EndOfFile
 };
 
 struct Token {
@@ -28,4 +59,5 @@ struct Token {
     std::optional<std::string> value;
 };
 
+// Function declaration
 std::vector<Token> tokenize(const std::string& input);
