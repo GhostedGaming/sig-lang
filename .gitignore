@@ -1,3 +1,49 @@
+# Build artifacts
+*.o
+*.obj
+*.exe
+*.dll
+*.so
+*.dylib
+*.a
+*.lib
+
+# Assembly files (if you want to ignore them)
 *.asm
-*.sg
-.vscode
+*.s
+
+# Executables (Unix)
+*
+!*/
+!*.*
+
+# Build directories
+build/
+bin/
+obj/
+debug/
+release/
+out/
+
+# IDE files
+.vscode/
+*.vcxproj.user
+*.sln.docstates
+*.suo
+*.user
+.vs/
+
+# CMake
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+*.cmake
+!CMakeLists.txt
+
+# Other common files
+*.log
+*.tmp
+core
+.DS_Store
+Thumbs.db
