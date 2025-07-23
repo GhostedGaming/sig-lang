@@ -8,7 +8,7 @@ fn hello() { // Another Comment
 
 let x = "Hello";
 
-print(x);
+print(12334);
 
 asm("mov rax, 0"); // Unsafe Has No Checks Just Inserts It
 

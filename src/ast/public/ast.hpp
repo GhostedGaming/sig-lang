@@ -35,22 +35,60 @@ struct PrintVariable {
     std::string variableName;
 };
 
-// Forward declare ASTNode for FunctionDefinition
+struct IfStatement {
+    std::string left;
+    std::string op;
+    std::string right;
+    std::vector<std::variant<
+        ReturnStatement,
+        PrintStatement,
+        AsmStatement,
+        struct FunctionDefinition,
+        FunctionCall,
+        VariableDeclaration,
+        VariableAssignment,
+        PrintVariable,
+        IfStatement
+    >> thenBlock;
+    std::optional<std::vector<std::variant<
+        ReturnStatement,
+        PrintStatement,
+        AsmStatement,
+        struct FunctionDefinition,
+        FunctionCall,
+        VariableDeclaration,
+        VariableAssignment,
+        PrintVariable,
+        IfStatement
+    >>> elseBlock;
+};
+
+struct FunctionDefinition {
+    std::string name;
+    std::vector<std::variant<
+        ReturnStatement,
+        PrintStatement,
+        AsmStatement,
+        struct FunctionDefinition,
+        FunctionCall,
+        VariableDeclaration,
+        VariableAssignment,
+        PrintVariable,
+        IfStatement
+    >> body;
+};
+
+// Final ASTNode and AST typedefs
 using ASTNode = std::variant<
     ReturnStatement,
     PrintStatement,
     AsmStatement,
-    struct FunctionDefinition,
+    FunctionDefinition,
     FunctionCall,
     VariableDeclaration,
     VariableAssignment,
-    PrintVariable
+    PrintVariable,
+    IfStatement
 >;
 
 using AST = std::vector<ASTNode>;
-
-// Now define FunctionDefinition with complete AST type
-struct FunctionDefinition {
-    std::string name;
-    AST body;
-};
