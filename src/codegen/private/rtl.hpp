@@ -8,7 +8,8 @@ struct RTLInsn {
     enum OpType { 
         SET, CALL, RETURN, LABEL, DATA, INLINE_ASM, LOAD, STORE,
         ADD, SUB, MUL, IMUL, DIV, IDIV, MOV, CMP, JMP, JE, JNE,
-        PUSH, POP, LEA, SYSCALL, XOR, AND, OR, SHL, SHR
+        PUSH, POP, LEA, SYSCALL, XOR, AND, OR, SHL, SHR,
+        IF_START, IF_END, ELSE_START
     };
     
     OpType op;

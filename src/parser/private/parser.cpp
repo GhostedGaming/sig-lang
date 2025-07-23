@@ -401,7 +401,95 @@ public:
 
         expectToken(TokenType::LeftParen, "after 'if' keyword. Syntax: if (condition) { ... }");
 
+        // Parse condition: left operand
+        if (!hasTokens()) {
+            reportError("Expected condition after '(' in if statement");
+            return;
+        }
         
+        IfStatement ifStmt;
+        Token leftToken = peekToken();
+        
+        if (leftToken.type == TokenType::Identifier || leftToken.type == TokenType::IntegerLiteral || leftToken.type == TokenType::String) {
+            ifStmt.left = leftToken.value.value_or("");
+            advance();
+        } else {
+            reportError("Expected identifier, number, or string as left operand in if condition");
+            return;
+        }
+        
+        // Parse comparison operator
+        if (!hasTokens()) {
+            reportError("Expected comparison operator in if condition");
+            return;
+        }
+        
+        Token opToken = peekToken();
+        switch (opToken.type) {
+            case TokenType::EqualEqual:
+                ifStmt.op = "==";
+                break;
+            case TokenType::NotEqual:
+                ifStmt.op = "!=";
+                break;
+            case TokenType::LessThan:
+                ifStmt.op = "<";
+                break;
+            case TokenType::LessThanEqual:
+                ifStmt.op = "<=";
+                break;
+            case TokenType::GreaterThan:
+                ifStmt.op = ">";
+                break;
+            case TokenType::GreaterThanEqual:
+                ifStmt.op = ">=";
+                break;
+            default:
+                reportError("Expected comparison operator (==, !=, <, <=, >, >=) in if condition");
+                return;
+        }
+        advance();
+        
+        // Parse right operand
+        if (!hasTokens()) {
+            reportError("Expected right operand after comparison operator in if condition");
+            return;
+        }
+        
+        Token rightToken = peekToken();
+        if (rightToken.type == TokenType::Identifier || rightToken.type == TokenType::IntegerLiteral || rightToken.type == TokenType::String) {
+            ifStmt.right = rightToken.value.value_or("");
+            advance();
+        } else {
+            reportError("Expected identifier, number, or string as right operand in if condition");
+            return;
+        }
+        
+        expectToken(TokenType::RightParen, "after if condition. Expected closing ')'");
+        
+        // Parse then block
+        expectToken(TokenType::LeftBrace, "after if condition. Expected opening '{'");
+        
+        // Parse statements inside the then block
+        parseStatementList(ifStmt.thenBlock);
+        
+        expectToken(TokenType::RightBrace, "after if then block. Expected closing '}'");
+        
+        // Check for optional else block
+        if (hasTokens() && peekToken().type == TokenType::KeywordElse) {
+            advance(); // Skip 'else'
+            expectToken(TokenType::LeftBrace, "after else keyword. Expected opening '{'");
+            
+            // Initialize else block
+            ifStmt.elseBlock = std::vector<ASTNode>();
+            
+            // Parse statements inside the else block
+            parseStatementList(ifStmt.elseBlock.value());
+            
+            expectToken(TokenType::RightBrace, "after else block. Expected closing '}'");
+        }
+        
+        ast.push_back(ifStmt);
     }
 
     /**
@@ -569,9 +657,13 @@ public:
                 parseVariables(ast);
                 break;
 
+            case TokenType::KeywordIf:
+                parseIfStatement(ast);
+                break;
+
             default:
                 reportError("Unexpected " + tokenTypeToString(token.type) + " at start of statement.\n"
-                           "   Expected one of: 'return', 'print', 'fn', 'let', 'asm', or identifier");
+                           "   Expected one of: 'return', 'print', 'fn', 'let', 'asm', 'if', or identifier");
         }
     }
 

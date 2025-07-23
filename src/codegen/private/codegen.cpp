@@ -115,6 +115,42 @@ private:
                 insn.attributes["type"] = "assignment";
                 rtl_insns.push_back(std::move(insn));
             }
+            else if constexpr (std::is_same_v<T, IfStatement>) {
+                // Generate unique labels for this if statement
+                auto if_end_label = ctx.new_label("if_end");
+                auto else_label = stmt.elseBlock ? ctx.new_label("else") : "";
+                
+                // Create if start instruction with condition info
+                RTLInsn if_start(RTLInsn::IF_START, {stmt.left, stmt.op, stmt.right});
+                if_start.attributes["if_end_label"] = if_end_label;
+                if (stmt.elseBlock) {
+                    if_start.attributes["else_label"] = else_label;
+                }
+                rtl_insns.push_back(std::move(if_start));
+                
+                // Process then block
+                for (const auto& then_stmt : stmt.thenBlock) {
+                    process_ast_node(then_stmt, rtl_insns, ctx);
+                }
+                
+                // If there's an else block, add else start
+                if (stmt.elseBlock) {
+                    RTLInsn else_start(RTLInsn::ELSE_START);
+                    else_start.attributes["else_label"] = else_label;
+                    else_start.attributes["if_end_label"] = if_end_label;
+                    rtl_insns.push_back(std::move(else_start));
+                    
+                    // Process else block
+                    for (const auto& else_stmt : stmt.elseBlock.value()) {
+                        process_ast_node(else_stmt, rtl_insns, ctx);
+                    }
+                }
+                
+                // Add if end marker
+                RTLInsn if_end(RTLInsn::IF_END);
+                if_end.attributes["if_end_label"] = if_end_label;
+                rtl_insns.push_back(std::move(if_end));
+            }
         }, node);
     }
     

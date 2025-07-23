@@ -314,6 +314,111 @@ void TemplateManager::init_function_templates() {
 }
 
 void TemplateManager::init_misc_templates() {
+    // If statement start (condition check and conditional jump)
+    templates.emplace_back(
+        "if_statement_start",
+        [](const RTLInsn& insn) { return insn.op == RTLInsn::IF_START; },
+        [](const RTLInsn& insn, CodeGenContext& ctx) -> std::string {
+            if (insn.operands.size() < 3) {
+                return std::string("; Error: If statement needs left, op, right operands\n");
+            }
+            
+            auto left = insn.operands[0];
+            auto op = insn.operands[1];
+            auto right = insn.operands[2];
+            auto if_end_label = insn.attributes.count("if_end_label") ? 
+                              insn.attributes.at("if_end_label") : "if_end";
+            auto else_label = insn.attributes.count("else_label") ? 
+                            insn.attributes.at("else_label") : "";
+            
+            std::string code = "; If statement: " + left + " " + op + " " + right + "\n";
+            
+            // Load left operand into register
+            if (std::isdigit(left[0]) || (left[0] == '-' && std::isdigit(left[1]))) {
+                // Left is a number literal
+                code += ctx.get_optimal_mov("eax", left);
+            } else {
+                // Left is a variable - check if it's in register or memory
+                if (ctx.variable_registers.count(left)) {
+                    auto reg = ctx.reg_alloc.get_register_name(ctx.variable_registers[left]);
+                    // Convert 64-bit register to 32-bit for comparison
+                    std::string reg32 = reg;
+                    if (reg.substr(0, 1) == "r" && reg.length() > 2) {
+                        reg32 = reg + "d"; // r15 -> r15d, etc.
+                    }
+                    code += "    mov eax, " + reg32 + "\n";
+                } else {
+                    code += "    mov eax, [" + left + "]\n";
+                }
+            }
+            
+            // Compare with right operand
+            if (std::isdigit(right[0]) || (right[0] == '-' && std::isdigit(right[1]))) {
+                // Right is a number literal
+                code += "    cmp eax, " + right + "\n";
+            } else {
+                // Right is a variable
+                if (ctx.variable_registers.count(right)) {
+                    auto reg = ctx.reg_alloc.get_register_name(ctx.variable_registers[right]);
+                    // Convert 64-bit register to 32-bit for comparison
+                    std::string reg32 = reg;
+                    if (reg.substr(0, 1) == "r" && reg.length() > 2) {
+                        reg32 = reg + "d"; // r15 -> r15d, etc.
+                    }
+                    code += "    cmp eax, " + reg32 + "\n";
+                } else {
+                    code += "    cmp eax, [" + right + "]\n";
+                }
+            }
+            
+            // Generate conditional jump based on operator
+            std::string jump_target = else_label.empty() ? if_end_label : else_label;
+            
+            if (op == "==") {
+                code += "    jne " + jump_target + "\n";
+            } else if (op == "!=") {
+                code += "    je " + jump_target + "\n";
+            } else if (op == "<") {
+                code += "    jge " + jump_target + "\n";
+            } else if (op == "<=") {
+                code += "    jg " + jump_target + "\n";
+            } else if (op == ">") {
+                code += "    jle " + jump_target + "\n";
+            } else if (op == ">=") {
+                code += "    jl " + jump_target + "\n";
+            } else {
+                code += "; Unknown operator: " + op + "\n";
+            }
+            
+            return code;
+        }, 1, "If statement condition check"
+    );
+    
+    // Else block start (jump over then block)
+    templates.emplace_back(
+        "else_statement_start",
+        [](const RTLInsn& insn) { return insn.op == RTLInsn::ELSE_START; },
+        [](const RTLInsn& insn, CodeGenContext& ctx) {
+            auto if_end_label = insn.attributes.count("if_end_label") ? 
+                              insn.attributes.at("if_end_label") : "if_end";
+            auto else_label = insn.attributes.count("else_label") ? 
+                            insn.attributes.at("else_label") : "else";
+            
+            return "    jmp " + if_end_label + "\n" +
+                   else_label + ":\n";
+        }, 1, "Else block start"
+    );
+    
+    // If statement end (place end label)
+    templates.emplace_back(
+        "if_statement_end",
+        [](const RTLInsn& insn) { return insn.op == RTLInsn::IF_END; },
+        [](const RTLInsn& insn, CodeGenContext& ctx) {
+            auto if_end_label = insn.attributes.count("if_end_label") ? 
+                              insn.attributes.at("if_end_label") : "if_end";
+            return if_end_label + ":\n";
+        }, 1, "If statement end label"
+    );
     // Optimized program exit
     templates.emplace_back(
         "exit_optimized",
