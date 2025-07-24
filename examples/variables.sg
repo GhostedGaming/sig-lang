@@ -1,0 +1,9 @@
+// Variable declaration and assignment examples
+let x = 42;
+print(x);
+
+let message = "Hello from variables!";
+print(message);
+
+let y = 100;
+print(y);

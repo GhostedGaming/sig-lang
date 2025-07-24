@@ -12,6 +12,10 @@
 *.asm
 *.s
 
+# Sig test files
+*.sg
+!examples/*.sg
+
 # Executables (Unix)
 *
 !*/
@@ -40,6 +44,9 @@ cmake_install.cmake
 Makefile
 *.cmake
 !CMakeLists.txt
+!build.sh
+!install.sh
+!uninstall.sh
 
 # Other common files
 *.log

@@ -1,9 +1,8 @@
 #include <codegen/public/codegen.hpp>
-#include "templates.hpp"
-#include "optimization.hpp"
-#include "context.hpp"
-#include "rtl.hpp"
-#include "../utils/utils.hpp"
+#include "../legacy/templates.hpp"
+#include "../legacy/optimization.hpp"
+#include "../legacy/context.hpp"
+#include "../legacy/rtl.hpp"
 #include <sstream>
 #include <vector>
 #include <functional>

@@ -1,0 +1,13 @@
+// Function definition and calls
+fn greet() {
+    print("Hello from function!");
+}
+
+fn say_goodbye() {
+    print("Goodbye!");
+}
+
+// Call functions
+greet();
+say_goodbye();
+print("Main execution");
