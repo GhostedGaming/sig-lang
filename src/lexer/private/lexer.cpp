@@ -5,47 +5,33 @@
 #include <array>
 #include <algorithm>
 
-/**
- * Creates a compile-time lookup table for valid identifier start characters
- * Valid characters: a-z, A-Z, _
- */
 constexpr std::array<bool, 256> make_identifier_start_table() {
     std::array<bool, 256> table{};
     
-    // Set a-z as valid identifier start characters
     for (int i = 'a'; i <= 'z'; ++i) {
         table[i] = true;
     }
     
-    // Set A-Z as valid identifier start characters
     for (int i = 'A'; i <= 'Z'; ++i) {
         table[i] = true;
     }
     
-    // Set underscore as valid identifier start character
     table['_'] = true;
     
     return table;
 }
 
-/**
- * Creates a compile-time lookup table for valid identifier continuation characters
- * Valid characters: a-z, A-Z, 0-9, _
- */
 constexpr std::array<bool, 256> make_identifier_char_table() {
     std::array<bool, 256> table{};
     
-    // Set a-z as valid identifier characters
     for (int i = 'a'; i <= 'z'; ++i) {
         table[i] = true;
     }
     
-    // Set A-Z as valid identifier characters
     for (int i = 'A'; i <= 'Z'; ++i) {
         table[i] = true;
     }
     
-    // Set 0-9 as valid identifier characters (but not start characters)
     for (int i = '0'; i <= '9'; ++i) {
         table[i] = true;
     }
@@ -71,44 +57,37 @@ constexpr std::array<bool, 256> make_digit_table() {
     return table;
 }
 
-/**
- * Creates a compile-time lookup table for whitespace characters
- * Valid characters: space, tab, newline, carriage return, vertical tab, form feed
- */
 constexpr std::array<bool, 256> make_space_table() {
     std::array<bool, 256> table{};
     
-    table[' '] = true;   // Space
-    table['\t'] = true;  // Tab
-    table['\n'] = true;  // Newline
-    table['\r'] = true;  // Carriage return
-    table['\v'] = true;  // Vertical tab
-    table['\f'] = true;  // Form feed
+    table[' '] = true;
+    table['\t'] = true;
+    table['\n'] = true;
+    table['\r'] = true;
+    table['\v'] = true;
+    table['\f'] = true;
     
     return table;
 }
 
-// Compile-time generated lookup tables for fast character classification
 static constexpr auto identifier_start_table = make_identifier_start_table();
 static constexpr auto identifier_char_table = make_identifier_char_table();
 static constexpr auto digit_table = make_digit_table();
 static constexpr auto space_table = make_space_table();
 
-// Keyword lookup table - maps string representations to their token types
 static const std::unordered_map<std::string_view, TokenType> keywords = {
-    {"return",   TokenType::KeywordReturn},    // Return keyword
-    {"print",    TokenType::KeywordPrint},     // Print keyword
-    {"asm",      TokenType::KeywordAsm},       // Assembly keyword
-    {"pub",      TokenType::KeywordPub},       // Public keyword
-    {"fn",       TokenType::Function},         // Function keyword
-    {"let",      TokenType::KeywordLet},       // Let keyword
-    {"if",       TokenType::KeywordIf},        // If keyword
-    {"else",     TokenType::KeywordElse},      // Else keyword
-    {"elif",     TokenType::KeywordElif},      // Elif keyword
-    {"while",    TokenType::KeywordWhile},     // While keyword
+    {"return",   TokenType::KeywordReturn},
+    {"print",    TokenType::KeywordPrint},
+    {"asm",      TokenType::KeywordAsm},
+    {"pub",      TokenType::KeywordPub},
+    {"fn",       TokenType::Function},
+    {"let",      TokenType::KeywordLet},
+    {"if",       TokenType::KeywordIf},
+    {"else",     TokenType::KeywordElse},
+    {"elif",     TokenType::KeywordElif},
+    {"while",    TokenType::KeywordWhile},
 };
 
-// Inline functions for fast character classification using lookup tables
 inline bool is_identifier_start(unsigned char c) {
     return identifier_start_table[c];
 }
@@ -125,17 +104,11 @@ inline bool is_space(unsigned char c) {
     return space_table[c];
 }
 
-/**
- * Reads an identifier from the input string starting at position i
- * Updates i to point to the character after the identifier
- * Returns a string_view of the identifier for efficiency
- */
 static std::string_view read_identifier(const std::string& input, size_t& i) {
     size_t start = i;
     const char* data = input.data();
     size_t size = input.size();
     
-    // Continue reading while we have valid identifier characters
     while (i < size && is_identifier_char(static_cast<unsigned char>(data[i]))) {
         ++i;
     }
@@ -143,17 +116,11 @@ static std::string_view read_identifier(const std::string& input, size_t& i) {
     return std::string_view(data + start, i - start);
 }
 
-/**
- * Reads a number from the input string starting at position i
- * Updates i to point to the character after the number
- * Returns a string_view of the number for efficiency
- */
 static std::string_view read_number(const std::string& input, size_t& i) {
     size_t start = i;
     const char* data = input.data();
     size_t size = input.size();
     
-    // Continue reading while we have valid digit characters
     while (i < size && is_digit(static_cast<unsigned char>(data[i]))) {
         ++i;
     }

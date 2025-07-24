@@ -45,6 +45,9 @@ public:
     void execute();
     void dump_ir();
     
+    // Create executable
+    void create_executable(const std::string& output_name);
+    
     // Alternative: compile to object file
     void compile_to_object(const std::string& filename);
 };

@@ -12,38 +12,40 @@
 
 </div>
 
-## 🚀 About
+## About
 
 Sig is a modern systems programming language that combines high-level expressiveness with low-level control. Built on LLVM infrastructure, Sig provides portable, optimized compilation while maintaining a clean, intuitive syntax perfect for system development, kernel programming, and high-performance applications.
 
 ### Key Features
-- 🔧 **LLVM-Powered**: Leverages LLVM's world-class optimization and multi-target support
-- 🎯 **High-Level Syntax**: Clean, expressive syntax familiar to modern developers
-- ⚡ **JIT & AOT Compilation**: Execute immediately with JIT or compile to optimized binaries
-- 🌍 **Cross-Platform**: Target multiple architectures through LLVM backend
-- 🔒 **Memory Safe**: (Planned) Safe memory management with zero-cost abstractions
-- 🛠️ **Systems Ready**: Direct hardware access and inline assembly when needed
+- **LLVM-Powered**: Leverages LLVM's world-class optimization and multi-target support
+- **High-Level Syntax**: Clean, expressive syntax familiar to modern developers
+- **JIT & AOT Compilation**: Execute immediately with JIT or compile to optimized binaries
+- **Cross-Platform**: Target multiple architectures through LLVM backend
+- **Memory Safe**: (Planned) Safe memory management with zero-cost abstractions
+- **Systems Ready**: Direct hardware access and inline assembly when needed
 
-## 📋 Current Status
+## Current Status
 
-**🔥 Active Development**: Sig has migrated to LLVM and core features are working!
+**Active Development**: Sig has migrated to LLVM and core features are working!
 
-### ✅ Implemented Features
+### Implemented Features
 - [x] LLVM-based compilation pipeline
-- [x] JIT execution with LLVM ORC
+- [x] **Native executable generation** - Creates optimized binaries
+- [x] **JIT execution** with LLVM ORC for immediate testing
+- [x] **Custom output names** with `-o` flag support
 - [x] Variables and basic types (integers, strings)
 - [x] Print statements and I/O
 - [x] Function definitions and calls
 - [x] LLVM IR generation and optimization
 - [x] Cross-platform compilation support
 
-### 🚧 In Progress
+### In Progress
 - [ ] Control flow (if/else, loops) - *Partially implemented*
 - [ ] Expression evaluation and operators
 - [ ] Type system and type checking
 - [ ] Standard library foundation
 
-### 🛣️ Roadmap
+### Roadmap
 - [ ] Structs and enums
 - [ ] Advanced memory management
 - [ ] Module system and imports
@@ -51,7 +53,7 @@ Sig is a modern systems programming language that combines high-level expressive
 - [ ] Package manager integration
 - [ ] IDE tooling and language server
 
-## 🔧 Installation
+## Installation
 
 ### Prerequisites
 - **CMake 3.20+**
@@ -97,29 +99,34 @@ This installs the compiler to `~/.local/bin` (or `~/bin`) and provides PATH setu
 
 ## 📖 Usage
 
-Sig supports three compilation modes:
+Sig supports multiple compilation and execution modes:
 
-### JIT Execution (Default)
+### Compile to Executable (Default)
+Create a native executable:
+```bash
+sig program.sg                 # Creates 'program' executable
+sig program.sg -o myapp        # Creates 'myapp' executable  
+```
+
+### JIT Execution
 Execute code immediately without creating files:
 ```bash
-./sig program.sg
-# or explicitly:
-./sig program.sg --jit
+sig program.sg --jit
 ```
 
 ### LLVM IR Generation
 View the generated LLVM IR:
 ```bash
-./sig program.sg --ir
+sig program.sg --ir
 ```
 
 ### Legacy Mode
 Use the original x86-64 assembly backend:
 ```bash
-./sig program.sg --legacy
+sig program.sg --legacy
 ```
 
-## 🎯 Language Examples
+## Language Examples
 
 ### Basic Hello World
 ```sig
@@ -148,17 +155,22 @@ greet();  // Call the function
 
 ### Running Examples
 ```bash
+# Compile to executable (default)
+sig examples/hello_world.sg
+./hello_world
+
+# Custom output name
+sig examples/variables.sg -o myvars
+./myvars
+
 # Execute with JIT
-./sig examples/hello_world.sg
+sig examples/functions.sg --jit
 
 # View LLVM IR
-./sig examples/variables.sg --ir
-
-# All examples work with any mode
-./sig examples/functions.sg --jit
+sig examples/variables.sg --ir
 ```
 
-## 🏗️ Architecture
+## Architecture
 
 Sig uses a modern LLVM-based compilation pipeline:
 
@@ -187,7 +199,7 @@ graph LR
 - **Runtime**: LLVM ORC JIT for immediate execution
 - **Legacy Support**: Original x86-64 assembly backend (deprecated)
 
-## 🤝 Contributing
+## Contributing
 
 We welcome contributions! Sig is rapidly evolving and there are many opportunities to contribute.
 
@@ -214,14 +226,14 @@ make  # Build the compiler
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## 📚 Documentation
+## Documentation
 
 - **Examples**: See `examples/` directory for working code samples
 - **Language Guide**: *(Coming Soon)*
 - **API Reference**: *(Coming Soon)*
 - **LLVM Integration**: *(Coming Soon)*
 
-## 🔧 Development
+## Development
 
 ### Project Structure
 ```
@@ -244,11 +256,11 @@ make
 gdb ./sig examples/hello_world.sg
 ```
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - **LLVM Project**: For providing world-class compiler infrastructure
 - **Systems Languages**: Inspired by C, C++, Rust, and Zig
@@ -258,7 +270,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ---
 
 <div align="center">
-<strong>⭐ Star this repo if you're excited about Sig's development! ⭐</strong>
+<strong>Star this repo if you're excited about Sig's development!</strong>
 
 **[Try Sig Now](#installation) • [Join Development](#contributing) • [View Examples](examples/)**
 </div>

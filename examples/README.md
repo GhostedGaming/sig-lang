@@ -7,14 +7,22 @@ This directory contains example programs demonstrating Sig language features.
 All examples can be run with any compilation mode:
 
 ```bash
-# JIT execution (default, fastest for development)
-./sig examples/hello_world.sg
+# Compile to executable (default)
+sig examples/hello_world.sg
+./hello_world
+
+# Custom output name
+sig examples/variables.sg -o myprogram
+./myprogram
+
+# JIT execution (fastest for development)
+sig examples/functions.sg --jit
 
 # View generated LLVM IR
-./sig examples/variables.sg --ir
+sig examples/variables.sg --ir
 
 # Use legacy x86-64 backend
-./sig examples/functions.sg --legacy
+sig examples/functions.sg --legacy
 ```
 
 ## Available Examples

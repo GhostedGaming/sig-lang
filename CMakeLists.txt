@@ -21,10 +21,14 @@ set(llvm_libs LLVM-20)
 # Collect all source files
 set(SOURCES
     src/main.cpp
+    src/args.cpp
     src/lexer/private/lexer.cpp
     src/parser/private/parser.cpp
     src/codegen/private/codegen.cpp
-    src/codegen/private/llvm_codegen.cpp
+    src/codegen/private/runtime_setup.cpp
+    src/codegen/private/code_generator.cpp
+    src/codegen/private/jit_executor.cpp
+    src/codegen/private/object_generator.cpp
     src/codegen/private/legacy_stubs.cpp
 )
 

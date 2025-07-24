@@ -4,20 +4,13 @@
 #include <string_view>
 #include <charconv>
 
-/**
- * Parser class to encapsulate parsing state and provide structured parsing
- * Uses recursive descent parsing with lookahead for syntax analysis
- */
+// Recursive descent parser
 class Parser {
 private:
-    const std::vector<Token>& tokens; // Reference to input token stream
-    size_t current; // Current position in token stream
-    const size_t size; // Total number of tokens
+    const std::vector<Token>& tokens;
+    size_t current;
+    const size_t size;
 
-    /**
-     * Fast integer parsing using std::from_chars (C++17)
-     * Avoids string-to-int conversion overhead of std::stoi
-     */
     int parseInteger(std::string_view str) const {
         int value;
         auto [ptr, ec] = std::from_chars(str.data(), str.data() + str.size(), value);
@@ -27,9 +20,6 @@ private:
         return value;
     }
 
-    /**
-     * Get a string representation of a token type for error messages
-     */
     std::string tokenTypeToString(TokenType type) const {
         switch (type) {
             case TokenType::KeywordReturn: return "'return'";
@@ -55,9 +45,6 @@ private:
         }
     }
 
-    /**
-     * Get context information for error messages
-     */
     std::string getErrorContext() const {
         std::string context = "at position " + std::to_string(current);
         
@@ -76,9 +63,7 @@ private:
         return context;
     }
 
-    /**
-     * Enhanced error recovery - skip tokens until we find a recovery point
-     */
+    // Skip tokens until we hit something we can continue parsing from
     void skipToRecoveryPoint() {
         while (hasTokens()) {
             const auto& token = peekToken();
@@ -132,10 +117,6 @@ private:
         return suggestions;
     }
     
-    /**
-     * Centralized error reporting with enhanced context and suggestions
-     * Provides detailed error messages with location and helpful suggestions
-     */
     [[noreturn]] void reportError(const std::string& message) const {
     std::cerr << "\nParse Error " << getErrorContext() << ":\n";
         std::cerr << "   " << message << "\n";
@@ -183,9 +164,6 @@ private:
         std::exit(1);
     }
     
-    /**
-     * Non-fatal error reporting with recovery
-     */
     void reportErrorWithRecovery(const std::string& message) {
         std::cerr << "\nParse Warning " << getErrorContext() << ":\n";
         std::cerr << "   " << message << "\n";
@@ -200,9 +178,6 @@ private:
         skipToRecoveryPoint();
     }
 
-    /**
-     * Report error with expected vs actual token information
-     */
     [[noreturn]] void reportExpectedError(TokenType expected, const std::string& context = "") const {
         std::string message = "Expected " + tokenTypeToString(expected);
         
@@ -233,18 +208,10 @@ private:
         reportError(message);
     }
 
-    /**
-     * Inline bounds checking to prevent buffer overruns
-     * Checks if we have enough tokens remaining for parsing
-     */
     inline bool hasTokens(size_t count = 1) const {
         return current + count <= size;
     }
 
-    /**
-     * Safe token access with bounds checking
-     * Allows lookahead without risking out-of-bounds access
-     */
     inline const Token& peekToken(size_t offset = 0) const {
         if (current + offset >= size) {
             reportError("Unexpected end of input. Expected more tokens to complete the statement.");
@@ -252,18 +219,10 @@ private:
         return tokens[current + offset];
     }
 
-    /**
-     * Advance parser position in token stream
-     * Moves current pointer forward by specified count
-     */
     inline void advance(size_t count = 1) {
         current += count;
     }
 
-    /**
-     * Expect specific token type and advance
-     * Validates token type and consumes it, or reports error
-     */
     inline void expectToken(TokenType expected, const std::string& context = "") {
         if (!hasTokens() || peekToken().type != expected) {
             reportExpectedError(expected, context);
@@ -272,23 +231,16 @@ private:
     }
 
 public:
-    /**
-     * Constructor - Initialize parser with token stream
-     */
     explicit Parser(const std::vector<Token>& tokens)
         : tokens(tokens), current(0), size(tokens.size()) {}
 
-    /**
-     * Parse return statement: return <integer>;
-     * Grammar: 'return' IntegerLiteral ';'
-     */
     void parseReturnStatement(AST& ast) {
         advance(); // Skip 'return' keyword
         int value;
 
         // Expect integer literal
         if (!hasTokens() || peekToken().type != TokenType::IntegerLiteral) {
-            std::cerr << "⚠️  Warning: Expected integer literal after 'return'. ";
+            std::cerr << "Warning: Expected integer literal after 'return'. ";
             std::cerr << "Examples: 'return 0;' or 'return 42;'\n";
             std::cerr << "   Defaulting return value to 0\n\n";
             value = 0;
@@ -306,7 +258,7 @@ public:
         if (hasTokens() && peekToken().type == TokenType::Semicolon) {
             advance(); // Skip semicolon
         } else {
-            std::cerr << "⚠️  Warning: Missing semicolon ';' after return statement. ";
+            std::cerr << "Warning: Missing semicolon ';' after return statement. ";
             std::cerr << "All statements should end with a semicolon.\n\n";
         }
 
@@ -314,10 +266,6 @@ public:
         ast.emplace_back(ReturnStatement{value});
     }
 
-    /**
-     * Parse print statement: print("string") or print(42) or print(variable);
-     * Grammar: 'print' '(' (String | IntegerLiteral | Identifier) ')' ';'
-     */
     void parsePrintStatement(AST& ast) {
         advance(); // Skip 'print' keyword
 
@@ -944,7 +892,7 @@ public:
                 parseStatement(ast);
             }
         } catch (const std::exception& e) {
-            std::cerr << "❌ Fatal parsing error: " << e.what() << std::endl;
+            std::cerr << "Fatal parsing error: " << e.what() << std::endl;
             std::exit(1);
         }
 
@@ -958,7 +906,7 @@ public:
  */
 AST parse(const std::vector<Token>& tokens) {
     if (tokens.empty()) {
-        std::cout << "ℹ️  Note: Input is empty, returning empty AST\n";
+        std::cout << "Note: Input is empty, returning empty AST\n";
         return AST{}; // Return empty AST for empty input
     }
 

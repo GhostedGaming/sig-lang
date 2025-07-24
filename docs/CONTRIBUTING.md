@@ -84,4 +84,4 @@ src/
 - Join discussions in existing issues
 - Check the README for basic information
 
-Happy coding! 🚀
+Happy coding!
