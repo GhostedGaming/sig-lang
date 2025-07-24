@@ -35,6 +35,24 @@ struct PrintVariable {
     std::string variableName;
 };
 
+struct ElifClause {
+    std::string left;
+    std::string op;
+    std::string right;
+    std::vector<std::variant<
+        ReturnStatement,
+        PrintStatement,
+        AsmStatement,
+        struct FunctionDefinition,
+        FunctionCall,
+        VariableDeclaration,
+        VariableAssignment,
+        PrintVariable,
+        struct IfStatement,
+        struct WhileStatement
+    >> block;
+};
+
 struct IfStatement {
     std::string left;
     std::string op;
@@ -48,8 +66,10 @@ struct IfStatement {
         VariableDeclaration,
         VariableAssignment,
         PrintVariable,
-        IfStatement
+        IfStatement,
+        struct WhileStatement
     >> thenBlock;
+    std::vector<ElifClause> elifClauses;
     std::optional<std::vector<std::variant<
         ReturnStatement,
         PrintStatement,
@@ -59,8 +79,27 @@ struct IfStatement {
         VariableDeclaration,
         VariableAssignment,
         PrintVariable,
-        IfStatement
+        IfStatement,
+        struct WhileStatement
     >>> elseBlock;
+};
+
+struct WhileStatement {
+    std::string left;
+    std::string op;
+    std::string right;
+    std::vector<std::variant<
+        ReturnStatement,
+        PrintStatement,
+        AsmStatement,
+        struct FunctionDefinition,
+        FunctionCall,
+        VariableDeclaration,
+        VariableAssignment,
+        PrintVariable,
+        IfStatement,
+        struct WhileStatement
+    >> body;
 };
 
 struct FunctionDefinition {
@@ -74,7 +113,8 @@ struct FunctionDefinition {
         VariableDeclaration,
         VariableAssignment,
         PrintVariable,
-        IfStatement
+        IfStatement,
+        struct WhileStatement
     >> body;
 };
 
@@ -88,7 +128,8 @@ using ASTNode = std::variant<
     VariableDeclaration,
     VariableAssignment,
     PrintVariable,
-    IfStatement
+    IfStatement,
+    WhileStatement
 >;
 
 using AST = std::vector<ASTNode>;

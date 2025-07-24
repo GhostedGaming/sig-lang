@@ -101,10 +101,11 @@ static const std::unordered_map<std::string_view, TokenType> keywords = {
     {"asm",      TokenType::KeywordAsm},       // Assembly keyword
     {"pub",      TokenType::KeywordPub},       // Public keyword
     {"fn",       TokenType::Function},         // Function keyword
-    {"let",      TokenType::KeywordLet},       // Let keyword (variable declaration)
+    {"let",      TokenType::KeywordLet},       // Let keyword
     {"if",       TokenType::KeywordIf},        // If keyword
     {"else",     TokenType::KeywordElse},      // Else keyword
-    {"else if",  TokenType::KeywordElseIf},    // Else if keyword
+    {"elif",     TokenType::KeywordElif},      // Elif keyword
+    {"while",    TokenType::KeywordWhile},     // While keyword
 };
 
 // Inline functions for fast character classification using lookup tables
@@ -188,8 +189,43 @@ static std::string read_multiline_comment(const std::string& input, size_t& i) {
  * Reports a tokenizer error and terminates the program
  * This is a [[noreturn]] function - it never returns to the caller
  */
+/**
+ * Report lexical analysis errors with position and context
+ */
+[[noreturn]] static void report_lexer_error(const std::string& message, size_t position, const std::string& input) {
+    std::cerr << "\nLexer Error at position " << position << ":\n";
+    std::cerr << "   " << message << "\n";
+    
+    // Show context around the error position
+    if (position < input.length()) {
+        size_t start = (position >= 20) ? position - 20 : 0;
+        size_t end = std::min(position + 20, input.length());
+        
+        std::cerr << "\nContext:\n   ";
+        for (size_t i = start; i < end; ++i) {
+            if (i == position) {
+                std::cerr << " <<HERE>> ";
+            }
+            char c = input[i];
+            if (c == '\n') {
+                std::cerr << "\\n";
+            } else if (c == '\t') {
+                std::cerr << "\\t";
+            } else if (c >= 32 && c <= 126) {
+                std::cerr << c;
+            } else {
+                std::cerr << "\\x" << std::hex << (unsigned char)c << std::dec;
+            }
+        }
+        std::cerr << "\n";
+    }
+    
+    std::cerr << std::endl;
+    std::exit(1);
+}
+
 [[noreturn]] static void report_error(const std::string& message) {
-    std::cerr << "Tokenizer error: " << message << "\n";
+    std::cerr << "\nLexer Error: " << message << "\n" << std::endl;
     std::exit(1);
 }
 
@@ -248,7 +284,7 @@ std::vector<Token> tokenize(const std::string& input) {
             }
             
             if (i >= size) {
-                report_error("Unterminated string literal");
+                report_lexer_error("Unterminated string literal - missing closing quote '\"'", string_start - 1, input);
             }
             
             // Add string content token
@@ -355,7 +391,7 @@ std::vector<Token> tokenize(const std::string& input) {
                 i += 2;
             } else {
                 // Single & is not supported in this language
-                report_error("Unexpected character: '&' (did you mean '&&'?)");
+                report_lexer_error("Unexpected character '&' - did you mean '&&' for logical AND?", i, input);
             }
         }
         // Handle logical OR operator  
@@ -366,7 +402,7 @@ std::vector<Token> tokenize(const std::string& input) {
                 i += 2;
             } else {
                 // Single | is not supported in this language
-                report_error("Unexpected character: '|' (did you mean '||'?)");
+                report_lexer_error("Unexpected character '|' - did you mean '||' for logical OR?", i, input);
             }
         }
         // Handle comments and division (if division were supported)
@@ -398,17 +434,27 @@ std::vector<Token> tokenize(const std::string& input) {
                     tokens.emplace_back(TokenType::EndMultilineComment);
                     i += 2; // Skip *\
                 } else {
-                    report_error("Unterminated multiline comment");
+                    report_lexer_error("Unterminated multiline comment - missing closing '*/'", i, input);
                 }
             } 
             else {
                 // Single / is not supported (no division operator in this language)
-                report_error("Unexpected character: '/'");
+                report_lexer_error("Unexpected character '/' - did you mean '//' for a comment?", i, input);
             }
         }
         // Handle any other unexpected characters
         else {
-            report_error("Unexpected character: '" + std::string(1, c) + "'");
+            // Provide context-specific suggestions for common mistakes
+            std::string suggestion = "";
+            if (c >= 'A' && c <= 'Z') {
+                suggestion = " - identifiers should start with lowercase letters";
+            } else if (c == '@' || c == '#' || c == '$') {
+                suggestion = " - special characters are not allowed in identifiers";
+            } else if (c == '`') {
+                suggestion = " - did you mean '\"' for a string?";
+            }
+            
+            report_lexer_error("Unexpected character '" + std::string(1, c) + "'" + suggestion, i, input);
         }
     }
 

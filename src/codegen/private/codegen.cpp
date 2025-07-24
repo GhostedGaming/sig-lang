@@ -118,19 +118,68 @@ private:
             else if constexpr (std::is_same_v<T, IfStatement>) {
                 // Generate unique labels for this if statement
                 auto if_end_label = ctx.new_label("if_end");
+                std::vector<std::string> elif_labels;
+                
+                // Generate labels for elif clauses
+                for (size_t i = 0; i < stmt.elifClauses.size(); ++i) {
+                    elif_labels.push_back(ctx.new_label("elif"));
+                }
+                
                 auto else_label = stmt.elseBlock ? ctx.new_label("else") : "";
+                
+                // Determine jump target for main if condition
+                std::string if_jump_target;
+                if (!stmt.elifClauses.empty()) {
+                    if_jump_target = elif_labels[0];
+                } else if (stmt.elseBlock) {
+                    if_jump_target = else_label;
+                } else {
+                    if_jump_target = if_end_label;
+                }
                 
                 // Create if start instruction with condition info
                 RTLInsn if_start(RTLInsn::IF_START, {stmt.left, stmt.op, stmt.right});
                 if_start.attributes["if_end_label"] = if_end_label;
-                if (stmt.elseBlock) {
-                    if_start.attributes["else_label"] = else_label;
-                }
+                if_start.attributes["else_label"] = if_jump_target;
                 rtl_insns.push_back(std::move(if_start));
                 
                 // Process then block
                 for (const auto& then_stmt : stmt.thenBlock) {
                     process_ast_node(then_stmt, rtl_insns, ctx);
+                }
+                
+                // Process elif clauses
+                for (size_t i = 0; i < stmt.elifClauses.size(); ++i) {
+                    const auto& elif_clause = stmt.elifClauses[i];
+                    
+                    // Determine jump target for this elif
+                    std::string elif_jump_target;
+                    if (i + 1 < stmt.elifClauses.size()) {
+                        elif_jump_target = elif_labels[i + 1];
+                    } else if (stmt.elseBlock) {
+                        elif_jump_target = else_label;
+                    } else {
+                        elif_jump_target = if_end_label;
+                    }
+                    
+                    // Add elif start instruction
+                    RTLInsn elif_start(RTLInsn::ELSE_START);
+                    elif_start.attributes["else_label"] = elif_labels[i];
+                    elif_start.attributes["if_end_label"] = if_end_label;
+                    elif_start.attributes["is_elif"] = "true";
+                    rtl_insns.push_back(std::move(elif_start));
+                    
+                    // Add elif condition check
+                    RTLInsn elif_cond(RTLInsn::IF_START, {elif_clause.left, elif_clause.op, elif_clause.right});
+                    elif_cond.attributes["if_end_label"] = if_end_label;
+                    elif_cond.attributes["else_label"] = elif_jump_target;
+                    elif_cond.attributes["is_elif_condition"] = "true";
+                    rtl_insns.push_back(std::move(elif_cond));
+                    
+                    // Process elif block
+                    for (const auto& elif_stmt : elif_clause.block) {
+                        process_ast_node(elif_stmt, rtl_insns, ctx);
+                    }
                 }
                 
                 // If there's an else block, add else start
@@ -150,6 +199,28 @@ private:
                 RTLInsn if_end(RTLInsn::IF_END);
                 if_end.attributes["if_end_label"] = if_end_label;
                 rtl_insns.push_back(std::move(if_end));
+            }
+            else if constexpr (std::is_same_v<T, WhileStatement>) {
+                // Generate unique labels for this while loop
+                auto while_start_label = ctx.new_label("while_start");
+                auto while_end_label = ctx.new_label("while_end");
+                
+                // Add while start instruction with condition info
+                RTLInsn while_start(RTLInsn::WHILE_START, {stmt.left, stmt.op, stmt.right});
+                while_start.attributes["while_start_label"] = while_start_label;
+                while_start.attributes["while_end_label"] = while_end_label;
+                rtl_insns.push_back(std::move(while_start));
+                
+                // Process loop body
+                for (const auto& body_stmt : stmt.body) {
+                    process_ast_node(body_stmt, rtl_insns, ctx);
+                }
+                
+                // Add while end marker
+                RTLInsn while_end(RTLInsn::WHILE_END);
+                while_end.attributes["while_start_label"] = while_start_label;
+                while_end.attributes["while_end_label"] = while_end_label;
+                rtl_insns.push_back(std::move(while_end));
             }
         }, node);
     }

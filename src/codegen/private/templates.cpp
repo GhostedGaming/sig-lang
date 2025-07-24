@@ -331,7 +331,13 @@ void TemplateManager::init_misc_templates() {
             auto else_label = insn.attributes.count("else_label") ? 
                             insn.attributes.at("else_label") : "";
             
-            std::string code = "; If statement: " + left + " " + op + " " + right + "\n";
+            // Check if this is an elif condition
+            bool is_elif_condition = insn.attributes.count("is_elif_condition") && 
+                                   insn.attributes.at("is_elif_condition") == "true";
+            
+            std::string code = is_elif_condition ? 
+                              "; Elif condition: " + left + " " + op + " " + right + "\n" :
+                              "; If statement: " + left + " " + op + " " + right + "\n";
             
             // Load left operand into register
             if (std::isdigit(left[0]) || (left[0] == '-' && std::isdigit(left[1]))) {
@@ -404,9 +410,18 @@ void TemplateManager::init_misc_templates() {
             auto else_label = insn.attributes.count("else_label") ? 
                             insn.attributes.at("else_label") : "else";
             
-            return "    jmp " + if_end_label + "\n" +
-                   else_label + ":\n";
-        }, 1, "Else block start"
+            // Check if this is an elif clause
+            bool is_elif = insn.attributes.count("is_elif") && 
+                          insn.attributes.at("is_elif") == "true";
+            
+            if (is_elif) {
+                // For elif, just place the label (no jump needed as previous condition handles it)
+                return "    jmp " + if_end_label + "\n" + else_label + ":\n";
+            } else {
+                // For regular else, jump over then block and place else label
+                return "    jmp " + if_end_label + "\n" + else_label + ":\n";
+            }
+        }, 1, "Else/Elif block start"
     );
     
     // If statement end (place end label)
@@ -419,6 +434,120 @@ void TemplateManager::init_misc_templates() {
             return if_end_label + ":\n";
         }, 1, "If statement end label"
     );
+    
+    // While loop start (label and condition check)
+    templates.emplace_back(
+        "while_statement_start",
+        [](const RTLInsn& insn) { return insn.op == RTLInsn::WHILE_START; },
+        [](const RTLInsn& insn, CodeGenContext& ctx) -> std::string {
+            auto while_start_label = insn.attributes.count("while_start_label") ? 
+                                   insn.attributes.at("while_start_label") : "while_start";
+            auto while_end_label = insn.attributes.count("while_end_label") ? 
+                                 insn.attributes.at("while_end_label") : "while_end";
+            
+            std::string code = while_start_label + ":\n";
+            
+            // Handle different condition types
+            if (insn.operands.size() >= 3 && !insn.operands[1].empty()) {
+                // Binary comparison: while (left op right)
+                auto left = insn.operands[0];
+                auto op = insn.operands[1];
+                auto right = insn.operands[2];
+                
+                code += "; While condition: " + left + " " + op + " " + right + "\n";
+                
+                // Load left operand into register
+                if (std::isdigit(left[0]) || (left[0] == '-' && std::isdigit(left[1]))) {
+                    code += ctx.get_optimal_mov("eax", left);
+                } else {
+                    if (ctx.variable_registers.count(left)) {
+                        auto reg = ctx.reg_alloc.get_register_name(ctx.variable_registers[left]);
+                        std::string reg32 = reg;
+                        if (reg.substr(0, 1) == "r" && reg.length() > 2) {
+                            reg32 = reg + "d";
+                        }
+                        code += "    mov eax, " + reg32 + "\n";
+                    } else {
+                        code += "    mov eax, [" + left + "]\n";
+                    }
+                }
+                
+                // Compare with right operand
+                if (std::isdigit(right[0]) || (right[0] == '-' && std::isdigit(right[1]))) {
+                    code += "    cmp eax, " + right + "\n";
+                } else {
+                    if (ctx.variable_registers.count(right)) {
+                        auto reg = ctx.reg_alloc.get_register_name(ctx.variable_registers[right]);
+                        std::string reg32 = reg;
+                        if (reg.substr(0, 1) == "r" && reg.length() > 2) {
+                            reg32 = reg + "d";
+                        }
+                        code += "    cmp eax, " + reg32 + "\n";
+                    } else {
+                        code += "    cmp eax, [" + right + "]\n";
+                    }
+                }
+                
+                // Generate conditional jump to end loop
+                if (op == "==") {
+                    code += "    jne " + while_end_label + "\n";
+                } else if (op == "!=") {
+                    code += "    je " + while_end_label + "\n";
+                } else if (op == "<") {
+                    code += "    jge " + while_end_label + "\n";
+                } else if (op == "<=") {
+                    code += "    jg " + while_end_label + "\n";
+                } else if (op == ">") {
+                    code += "    jle " + while_end_label + "\n";
+                } else if (op == ">=") {
+                    code += "    jl " + while_end_label + "\n";
+                }
+            } else if (insn.operands.size() >= 1) {
+                // Single operand condition: while (x) or while (1)
+                auto condition = insn.operands[0];
+                code += "; While condition: " + condition + "\n";
+                
+                if (std::isdigit(condition[0]) || (condition[0] == '-' && std::isdigit(condition[1]))) {
+                    // Numeric literal
+                    if (condition == "0") {
+                        // while (0) - never execute
+                        code += "    jmp " + while_end_label + "\n";
+                    }
+                    // while (non-zero) - always execute (infinite loop), no condition check needed
+                } else {
+                    // Variable condition
+                    if (ctx.variable_registers.count(condition)) {
+                        auto reg = ctx.reg_alloc.get_register_name(ctx.variable_registers[condition]);
+                        std::string reg32 = reg;
+                        if (reg.substr(0, 1) == "r" && reg.length() > 2) {
+                            reg32 = reg + "d";
+                        }
+                        code += "    cmp " + reg32 + ", 0\n";
+                    } else {
+                        code += "    cmp dword [" + condition + "], 0\n";
+                    }
+                    code += "    je " + while_end_label + "\n";
+                }
+            }
+            
+            return code;
+        }, 1, "While loop start"
+    );
+    
+    // While loop end (jump back to start and place end label)
+    templates.emplace_back(
+        "while_statement_end",
+        [](const RTLInsn& insn) { return insn.op == RTLInsn::WHILE_END; },
+        [](const RTLInsn& insn, CodeGenContext& ctx) {
+            auto while_start_label = insn.attributes.count("while_start_label") ? 
+                                   insn.attributes.at("while_start_label") : "while_start";
+            auto while_end_label = insn.attributes.count("while_end_label") ? 
+                                 insn.attributes.at("while_end_label") : "while_end";
+            
+            return "    jmp " + while_start_label + "\n" + while_end_label + ":\n";
+        }, 1, "While loop end"
+    );
+    
     // Optimized program exit
     templates.emplace_back(
         "exit_optimized",

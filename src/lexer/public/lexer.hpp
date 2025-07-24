@@ -12,7 +12,7 @@ enum class TokenType {
     KeywordLet,
     KeywordIf,
     KeywordElse,
-    KeywordElseIf,
+    KeywordElif,
     KeywordWhile,
     
     // Literals

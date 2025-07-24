@@ -19,7 +19,7 @@ std::string read_file(const std::string& path) {
 }
 
 int main(int argc, char* argv[]) {
-    if (argc < 2 || argc > 3) {
+    if (argc < 2 || argc > 4) {
         std::cerr << "Usage: " << argv[0] << " <file.sig> [output.asm]\n";
         return 1;
     }
@@ -53,14 +53,25 @@ int main(int argc, char* argv[]) {
     
     // Assemble the output file
     std::string obj_file = output_file.substr(0, output_file.find_last_of('.')) + ".o";
-    std::string nasm_command = "nasm -felf64 " + output_file + " -o " + obj_file;
-    int result = std::system(nasm_command.c_str());
-    
-    if (result == 0) {
-        std::cout << "Assembly successful. Object file created.\n";
+    std::string nasm_command_64 = "nasm -felf64 " + output_file + " -o " + obj_file;
+    std::string nasm_command_32 = "nasm -felf32 " + output_file + " -o " + obj_file;
+    int result_64 = std::system(nasm_command_64.c_str());
+    int result_32 = std::system(nasm_command_32.c_str());
+
+    if (argv[3] == "-32") {
+        if (result_32 == 0) {
+            std::cout << "Assembly successful. Object file created.\n";
+        } else {
+            std::cerr << "Assembly failed with nasm.\n";
+            return 1;
+        }
     } else {
-        std::cerr << "Assembly failed with nasm.\n";
-        return 1;
+        if (result_64 == 0) {
+            std::cout << "Assembly successful. Object file created.\n";
+        } else {
+            std::cerr << "Assembly failed with nasm.\n";
+            return 1;
+        }
     }
     
     // Link the object file

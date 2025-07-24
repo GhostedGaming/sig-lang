@@ -77,16 +77,78 @@ private:
     }
 
     /**
-     * Centralized error reporting with enhanced context
-     * Provides detailed error messages with location and suggestions
+     * Enhanced error recovery - skip tokens until we find a recovery point
+     */
+    void skipToRecoveryPoint() {
+        while (hasTokens()) {
+            const auto& token = peekToken();
+            // Recovery points: semicolons, braces, or statement keywords
+            if (token.type == TokenType::Semicolon ||
+                token.type == TokenType::RightBrace ||
+                token.type == TokenType::KeywordReturn ||
+                token.type == TokenType::KeywordPrint ||
+                token.type == TokenType::KeywordLet ||
+                token.type == TokenType::KeywordIf ||
+                token.type == TokenType::KeywordWhile ||
+                token.type == TokenType::Function ||
+                token.type == TokenType::KeywordAsm) {
+                break;
+            }
+            advance();
+        }
+    }
+    
+    /**
+     * Get helpful suggestions based on context
+     */
+    std::string getSuggestions() const {
+        if (!hasTokens()) return "";
+        
+        const auto& token = peekToken();
+        std::string suggestions;
+        
+        // Context-aware suggestions
+        if (current > 0) {
+            const auto& prevToken = tokens[current - 1];
+            
+            // After let keyword
+            if (prevToken.type == TokenType::KeywordLet) {
+                suggestions = "\nSuggestions:\n   • let variableName;\n   • let x = 42;\n   • let name = \"value\";";
+            }
+            // After print keyword  
+            else if (prevToken.type == TokenType::KeywordPrint) {
+                suggestions = "\nSuggestions:\n   • print(\"Hello\");\n   • print(42);\n   • print(variableName);";
+            }
+            // After if keyword
+            else if (prevToken.type == TokenType::KeywordIf) {
+                suggestions = "\nSuggestions:\n   • if (x == 5) { ... }\n   • if (name != \"test\") { ... }";
+            }
+            // After identifier
+            else if (prevToken.type == TokenType::Identifier && token.type != TokenType::LeftParen) {
+                suggestions = "\nDid you mean:\n   • " + prevToken.value.value_or("name") + "(); (function call)\n   • let " + prevToken.value.value_or("name") + " = value; (assignment)";
+            }
+        }
+        
+        return suggestions;
+    }
+    
+    /**
+     * Centralized error reporting with enhanced context and suggestions
+     * Provides detailed error messages with location and helpful suggestions
      */
     [[noreturn]] void reportError(const std::string& message) const {
-        std::cerr << "\n❌ Parse Error " << getErrorContext() << ":\n";
+    std::cerr << "\nParse Error " << getErrorContext() << ":\n";
         std::cerr << "   " << message << "\n";
+        
+        // Add context-aware suggestions
+        std::string suggestions = getSuggestions();
+        if (!suggestions.empty()) {
+            std::cerr << suggestions << "\n";
+        }
         
         // Show surrounding context if available
         if (current > 0 && current < size) {
-            std::cerr << "\n📍 Context:\n";
+            std::cerr << "\nContext:\n";
             
             // Show previous token
             if (current > 0) {
@@ -120,6 +182,23 @@ private:
         std::cerr << std::endl;
         std::exit(1);
     }
+    
+    /**
+     * Non-fatal error reporting with recovery
+     */
+    void reportErrorWithRecovery(const std::string& message) {
+        std::cerr << "\nParse Warning " << getErrorContext() << ":\n";
+        std::cerr << "   " << message << "\n";
+        
+        // Add suggestions
+        std::string suggestions = getSuggestions();
+        if (!suggestions.empty()) {
+            std::cerr << suggestions << "\n";
+        }
+        
+        std::cerr << "   Attempting to recover...\n" << std::endl;
+        skipToRecoveryPoint();
+    }
 
     /**
      * Report error with expected vs actual token information
@@ -138,6 +217,17 @@ private:
             }
         } else {
             message += ", but reached end of input";
+        }
+        
+        // Add specific help for common mistakes
+        if (expected == TokenType::Semicolon) {
+            message += "\nRemember: All statements must end with a semicolon ';'";
+        } else if (expected == TokenType::RightBrace) {
+            message += "\nMake sure all '{' braces have matching '}' braces";
+        } else if (expected == TokenType::RightParen) {
+            message += "\nMake sure all '(' parentheses have matching ')' parentheses";
+        } else if (expected == TokenType::LeftParen && current < size && tokens[current].type == TokenType::String) {
+            message += "\nDid you forget parentheses? Use: print(\"text\") not print \"text\"";
         }
         
         reportError(message);
@@ -474,6 +564,87 @@ public:
         parseStatementList(ifStmt.thenBlock);
         
         expectToken(TokenType::RightBrace, "after if then block. Expected closing '}'");
+
+        // Parse elif clauses
+        while (hasTokens() && peekToken().type == TokenType::KeywordElif) {
+            advance(); // Skip 'elif'
+            
+            ElifClause elifClause;
+            
+            expectToken(TokenType::LeftParen, "after 'elif' keyword. Expected opening '('");
+            
+            // Parse elif condition (same as if condition)
+            if (!hasTokens()) {
+                reportError("Expected condition after '(' in elif statement");
+                return;
+            }
+            
+            Token leftToken = peekToken();
+            if (leftToken.type == TokenType::Identifier || leftToken.type == TokenType::IntegerLiteral || leftToken.type == TokenType::String) {
+                elifClause.left = leftToken.value.value_or("");
+                advance();
+            } else {
+                reportError("Expected identifier, number, or string as left operand in elif condition");
+                return;
+            }
+            
+            // Parse comparison operator
+            if (!hasTokens()) {
+                reportError("Expected comparison operator in elif condition");
+                return;
+            }
+            
+            Token opToken = peekToken();
+            switch (opToken.type) {
+                case TokenType::EqualEqual:
+                    elifClause.op = "==";
+                    break;
+                case TokenType::NotEqual:
+                    elifClause.op = "!=";
+                    break;
+                case TokenType::LessThan:
+                    elifClause.op = "<";
+                    break;
+                case TokenType::LessThanEqual:
+                    elifClause.op = "<=";
+                    break;
+                case TokenType::GreaterThan:
+                    elifClause.op = ">";
+                    break;
+                case TokenType::GreaterThanEqual:
+                    elifClause.op = ">=";
+                    break;
+                default:
+                    reportError("Expected comparison operator (==, !=, <, <=, >, >=) in elif condition");
+                    return;
+            }
+            advance();
+            
+            // Parse right operand
+            if (!hasTokens()) {
+                reportError("Expected right operand after comparison operator in elif condition");
+                return;
+            }
+            
+            Token rightToken = peekToken();
+            if (rightToken.type == TokenType::Identifier || rightToken.type == TokenType::IntegerLiteral || rightToken.type == TokenType::String) {
+                elifClause.right = rightToken.value.value_or("");
+                advance();
+            } else {
+                reportError("Expected identifier, number, or string as right operand in elif condition");
+                return;
+            }
+            
+            expectToken(TokenType::RightParen, "after elif condition. Expected closing ')'");
+            expectToken(TokenType::LeftBrace, "after elif condition. Expected opening '{'");
+            
+            // Parse elif block
+            parseStatementList(elifClause.block);
+            
+            expectToken(TokenType::RightBrace, "after elif block. Expected closing '}'");
+            
+            ifStmt.elifClauses.push_back(elifClause);
+        }
         
         // Check for optional else block
         if (hasTokens() && peekToken().type == TokenType::KeywordElse) {
@@ -490,6 +661,93 @@ public:
         }
         
         ast.push_back(ifStmt);
+    }
+
+    void parseWhile(AST& ast) {
+        advance(); // Skip 'while'
+        expectToken(TokenType::LeftParen, "after while keyword. Expected opening '('");
+
+        // Parse the condition - could be single operand or binary comparison
+        if (!hasTokens()) {
+            reportError("Expected condition after '(' in while statement");
+            return;
+        }
+        
+        WhileStatement whileStmt;
+        
+        // Parse first operand (left side or single condition)
+        Token firstToken = peekToken();
+        if (firstToken.type != TokenType::Identifier && 
+            firstToken.type != TokenType::IntegerLiteral && 
+            firstToken.type != TokenType::String) {
+            reportError("Expected identifier, number, or string in while condition");
+            return;
+        }
+        
+        whileStmt.left = firstToken.value.value_or("");
+        advance();
+        
+        // Check if there's a comparison operator next
+        if (hasTokens() && peekToken().type != TokenType::RightParen) {
+            Token opToken = peekToken();
+            
+            // Check if it's a comparison operator
+            bool isComparisonOp = (opToken.type == TokenType::EqualEqual ||
+                                 opToken.type == TokenType::NotEqual ||
+                                 opToken.type == TokenType::LessThan ||
+                                 opToken.type == TokenType::LessThanEqual ||
+                                 opToken.type == TokenType::GreaterThan ||
+                                 opToken.type == TokenType::GreaterThanEqual);
+            
+            if (isComparisonOp) {
+                // Binary comparison: while (left op right)
+                switch (opToken.type) {
+                    case TokenType::EqualEqual: whileStmt.op = "=="; break;
+                    case TokenType::NotEqual: whileStmt.op = "!="; break;
+                    case TokenType::LessThan: whileStmt.op = "<"; break;
+                    case TokenType::LessThanEqual: whileStmt.op = "<="; break;
+                    case TokenType::GreaterThan: whileStmt.op = ">"; break;
+                    case TokenType::GreaterThanEqual: whileStmt.op = ">="; break;
+                    default: break;
+                }
+                advance(); // consume operator
+                
+                // Parse right operand
+                if (!hasTokens()) {
+                    reportError("Expected right operand after comparison operator in while condition");
+                    return;
+                }
+                
+                Token rightToken = peekToken();
+                if (rightToken.type != TokenType::Identifier && 
+                    rightToken.type != TokenType::IntegerLiteral && 
+                    rightToken.type != TokenType::String) {
+                    reportError("Expected identifier, number, or string as right operand in while condition");
+                    return;
+                }
+                
+                whileStmt.right = rightToken.value.value_or("");
+                advance();
+            } else {
+                reportError("Unexpected token in while condition. Expected comparison operator or closing ')'");
+                return;
+            }
+        } else {
+            // Single operand condition (e.g., while (1) or while (x))
+            whileStmt.op = "";
+            whileStmt.right = "";
+        }
+        
+        expectToken(TokenType::RightParen, "after while condition. Expected closing ')'");
+        expectToken(TokenType::LeftBrace, "after while condition. Expected opening '{'");
+        
+        // Parse while body block
+        parseStatementList(whileStmt.body);
+        
+        expectToken(TokenType::RightBrace, "after while body. Expected closing '}'");
+        
+        // Add whileStmt to AST
+        ast.push_back(whileStmt);
     }
 
     /**
@@ -661,9 +919,13 @@ public:
                 parseIfStatement(ast);
                 break;
 
+            case TokenType::KeywordWhile:
+                parseWhile(ast);
+                break;
+
             default:
                 reportError("Unexpected " + tokenTypeToString(token.type) + " at start of statement.\n"
-                           "   Expected one of: 'return', 'print', 'fn', 'let', 'asm', 'if', or identifier");
+                           "   Expected one of: 'return', 'print', 'fn', 'let', 'asm', 'if', 'while', or identifier");
         }
     }
 
