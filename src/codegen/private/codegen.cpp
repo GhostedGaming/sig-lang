@@ -221,6 +221,29 @@ private:
                 while_end.attributes["while_end_label"] = while_end_label;
                 rtl_insns.push_back(std::move(while_end));
             }
+            else if constexpr (std::is_same_v<T, ForStatement>) {
+                // Generate unique labels for this for loop
+                auto for_start_label = ctx.new_label("for_start");
+                auto for_end_label = ctx.new_label("for_end");
+                
+                // Add for start instruction with initialization and condition info
+                RTLInsn for_start(RTLInsn::FOR_START, {stmt.initialization, stmt.condition, stmt.count});
+                for_start.attributes["for_start_label"] = for_start_label;
+                for_start.attributes["for_end_label"] = for_end_label;
+                rtl_insns.push_back(std::move(for_start));
+                
+                // Process loop body
+                for (const auto& body_stmt : stmt.body) {
+                    process_ast_node(body_stmt, rtl_insns, ctx);
+                }
+                
+                // Add for end marker
+                RTLInsn for_end(RTLInsn::FOR_END);
+                for_end.attributes["for_start_label"] = for_start_label;
+                for_end.attributes["for_end_label"] = for_end_label;
+                for_end.attributes["count"] = stmt.count;
+                rtl_insns.push_back(std::move(for_end));
+            }
         }, node);
     }
     

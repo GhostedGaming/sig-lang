@@ -548,6 +548,80 @@ void TemplateManager::init_misc_templates() {
         }, 1, "While loop end"
     );
     
+    // For loop start (initialization, label and condition check)
+    templates.emplace_back(
+        "for_statement_start",
+        [](const RTLInsn& insn) { return insn.op == RTLInsn::FOR_START; },
+        [](const RTLInsn& insn, CodeGenContext& ctx) -> std::string {
+            auto for_start_label = insn.attributes.count("for_start_label") ? 
+                                 insn.attributes.at("for_start_label") : "for_start";
+            auto for_end_label = insn.attributes.count("for_end_label") ? 
+                               insn.attributes.at("for_end_label") : "for_end";
+            
+            if (insn.operands.size() < 3) {
+                return "; Error: for loop missing operands\n";
+            }
+            
+            auto loop_var = insn.operands[0];
+            auto condition = insn.operands[1];
+            auto count = insn.operands[2];
+            
+            std::string code = "";
+            
+            // Store loop variable for the FOR_END template
+            ctx.current_for_variable.push_back(loop_var);
+            
+            // Initialize loop variable
+            code += "; For loop initialization: " + loop_var + " = 1\n";
+            ctx.emit_variable(loop_var, "dd 1");
+            code += ctx.get_optimal_mov("eax", "1");
+            code += "    mov [" + loop_var + "], eax\n";
+            
+            // Loop start label
+            code += for_start_label + ":\n";
+            
+            // Condition check: loop_var <= count
+            code += "; For condition: " + loop_var + " <= " + count + "\n";
+            code += "    mov eax, [" + loop_var + "]\n";
+            code += "    cmp eax, " + count + "\n";
+            code += "    jg " + for_end_label + "\n";
+            
+            return code;
+        }, 1, "For loop start"
+    );
+    
+    // For loop end (increment and jump back to start)
+    templates.emplace_back(
+        "for_statement_end",
+        [](const RTLInsn& insn) { return insn.op == RTLInsn::FOR_END; },
+        [](const RTLInsn& insn, CodeGenContext& ctx) {
+            auto for_start_label = insn.attributes.count("for_start_label") ? 
+                                 insn.attributes.at("for_start_label") : "for_start";
+            auto for_end_label = insn.attributes.count("for_end_label") ? 
+                               insn.attributes.at("for_end_label") : "for_end";
+            
+            std::string code = "";
+            
+            // We need to track the loop variable better
+            // For the example for(i,1,100), the variable name is 'i'
+            // We'll store this in the context during FOR_START processing
+            std::string loop_var = "i"; // Default fallback
+            if (ctx.current_for_variable.size() > 0) {
+                loop_var = ctx.current_for_variable.back();
+                ctx.current_for_variable.pop_back();
+            }
+            
+            code += "; For loop increment\n";
+            code += "    mov eax, [" + loop_var + "]\n";
+            code += "    inc eax\n";
+            code += "    mov [" + loop_var + "], eax\n";
+            code += "    jmp " + for_start_label + "\n";
+            code += for_end_label + ":\n";
+            
+            return code;
+        }, 1, "For loop end"
+    );
+    
     // Optimized program exit
     templates.emplace_back(
         "exit_optimized",

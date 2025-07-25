@@ -149,6 +149,52 @@ Value* LLVMCodeGen::codegen_stmt(const ASTNode& stmt) {
             // TODO: implement
             return nullptr;
         }
+        else if constexpr (std::is_same_v<T, ForStatement>) {
+            // Create basic blocks for the for loop
+            BasicBlock* for_init = BasicBlock::Create(*context, "for.init", current_function);
+            BasicBlock* for_cond = BasicBlock::Create(*context, "for.cond", current_function);
+            BasicBlock* for_body = BasicBlock::Create(*context, "for.body", current_function);
+            BasicBlock* for_inc = BasicBlock::Create(*context, "for.inc", current_function);
+            BasicBlock* for_end = BasicBlock::Create(*context, "for.end", current_function);
+            
+            // Jump to initialization
+            builder->CreateBr(for_init);
+            
+            // Initialization block
+            builder->SetInsertPoint(for_init);
+            // Create and initialize loop variable
+            Type* var_type = Type::getInt32Ty(*context);
+            AllocaInst* loop_var = builder->CreateAlloca(var_type, nullptr, s.initialization);
+            variables[s.initialization] = loop_var;
+            Value* init_val = ConstantInt::get(Type::getInt32Ty(*context), 1);
+            builder->CreateStore(init_val, loop_var);
+            builder->CreateBr(for_cond);
+            
+            // Condition block
+            builder->SetInsertPoint(for_cond);
+            Value* current_val = builder->CreateLoad(var_type, loop_var);
+            Value* count_val = ConstantInt::get(Type::getInt32Ty(*context), std::stoi(s.count));
+            Value* cond = builder->CreateICmpSLE(current_val, count_val);
+            builder->CreateCondBr(cond, for_body, for_end);
+            
+            // Body block
+            builder->SetInsertPoint(for_body);
+            for (const auto& body_stmt : s.body) {
+                codegen_stmt(body_stmt);
+            }
+            builder->CreateBr(for_inc);
+            
+            // Increment block
+            builder->SetInsertPoint(for_inc);
+            Value* next_val = builder->CreateAdd(current_val, ConstantInt::get(Type::getInt32Ty(*context), 1));
+            builder->CreateStore(next_val, loop_var);
+            builder->CreateBr(for_cond);
+            
+            // End block
+            builder->SetInsertPoint(for_end);
+            
+            return nullptr;
+        }
         else if constexpr (std::is_same_v<T, AsmStatement>) {
             // TODO: inline assembly support
             return nullptr;

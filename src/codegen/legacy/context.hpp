@@ -3,6 +3,7 @@
 #include <sstream>
 #include <unordered_map>
 #include <string>
+#include <vector>
 
 // Enhanced code generation context
 class CodeGenContext {
@@ -16,6 +17,7 @@ public:
     int next_string_id = 0;
     bool in_function = false;
     std::string current_function;
+    std::vector<std::string> current_for_variable;
     
     // Optimization settings
     bool optimize_for_size = false;
@@ -26,5 +28,6 @@ public:
     std::string new_string_label();
     void emit_data(const std::string& label, const std::string& data);
     void emit_bss(const std::string& label, const std::string& data);
+    void emit_variable(const std::string& label, const std::string& data);
     std::string get_optimal_mov(const std::string& dest, const std::string& src);
 };

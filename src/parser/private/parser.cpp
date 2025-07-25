@@ -20,30 +20,7 @@ private:
         return value;
     }
 
-    std::string tokenTypeToString(TokenType type) const {
-        switch (type) {
-            case TokenType::KeywordReturn: return "'return'";
-            case TokenType::KeywordPrint: return "'print'";
-            case TokenType::KeywordPub: return "'pub'";
-            case TokenType::KeywordAsm: return "'asm'";
-            case TokenType::KeywordLet: return "'let'";
-            case TokenType::Function: return "'fn'";
-            case TokenType::Identifier: return "identifier";
-            case TokenType::IntegerLiteral: return "integer";
-            case TokenType::String: return "string";
-            case TokenType::Quote: return "'\"'";
-            case TokenType::LeftParen: return "'('";
-            case TokenType::RightParen: return "')'";
-            case TokenType::LeftBrace: return "'{'";
-            case TokenType::RightBrace: return "'}'";
-            case TokenType::Semicolon: return "';'";
-            case TokenType::Equal: return "'='";
-            case TokenType::Comment: return "comment";
-            case TokenType::MultilineComment: return "multiline comment";
-            case TokenType::EndMultilineComment: return "'*/'";
-            default: return "unknown token";
-        }
-    }
+
 
     std::string getErrorContext() const {
         std::string context = "at position " + std::to_string(current);
@@ -337,6 +314,76 @@ public:
                        "   • print(myVar);        (variable)\n"
                        "   Found: " + tokenTypeToString(token.type));
         }
+    }
+
+    void parseFor(AST& ast) {
+        advance(); // skip 'for'
+        expectToken(TokenType::LeftParen, "expected '(' after for");
+
+        if (!hasTokens()) {
+            reportError("Expected initializer in for loop after '('");
+            return;
+        }
+
+        ForStatement forstmnt;
+
+        // Parse initialization - GET the current token first
+        Token initialization = peekToken();
+        if (initialization.type == TokenType::Identifier || initialization.type == TokenType::IntegerLiteral) {
+            forstmnt.initialization = initialization.value.value_or("");
+            advance(); // Move past the initialization token
+        } else {
+            reportError("Expected identifier or number as initializer in for loop");
+            return;
+        }
+
+        expectToken(TokenType::Comma, "Expected ',' after initializer");
+
+        // Parse condition - GET the current token first
+        if (!hasTokens()) {
+            reportError("Expected condition in for loop after ','");
+            return;
+        }
+
+        Token condition = peekToken();
+        if (condition.type == TokenType::Identifier || condition.type == TokenType::IntegerLiteral) {
+            forstmnt.condition = condition.value.value_or("");
+            advance(); // Move past the condition token
+        } else {
+            reportError("Expected identifier or number as condition in for loop");
+            return;
+        }
+
+        expectToken(TokenType::Comma, "Expected ',' after condition");
+
+        // Parse count/increment - GET the current token first
+        if (!hasTokens()) {
+            reportError("Expected count/increment in for loop after ','");
+            return;
+        }
+
+        Token count = peekToken();
+        if (count.type == TokenType::Identifier || count.type == TokenType::IntegerLiteral) {
+            forstmnt.count = count.value.value_or("");
+            advance(); // Move past the count token
+        } else {
+            reportError("Expected identifier or number as count in for loop");
+            return;
+        }
+
+        // Expect closing parenthesis
+        expectToken(TokenType::RightParen, "Expected ')' after for loop header");
+
+        // Parse the body block
+        expectToken(TokenType::LeftBrace, "Expected '{' to start for loop body");
+
+        // Parse statements inside the for loop body
+        parseStatementList(forstmnt.body);
+
+        expectToken(TokenType::RightBrace, "Expected '}' to close for loop body");
+
+        // Add the for statement to the AST
+        ast.push_back(forstmnt);
     }
 
     /**
@@ -870,10 +917,16 @@ public:
             case TokenType::KeywordWhile:
                 parseWhile(ast);
                 break;
+            
+            case TokenType::KeywordFor:
+                parseFor(ast);
+                break;
 
             default:
                 reportError("Unexpected " + tokenTypeToString(token.type) + " at start of statement.\n"
                            "   Expected one of: 'return', 'print', 'fn', 'let', 'asm', 'if', 'while', or identifier");
+                advance();
+                break;
         }
     }
 
@@ -888,7 +941,7 @@ public:
 
         try {
             // Parse all statements until end of input
-            while (hasTokens()) {
+            while (hasTokens() && peekToken().type != TokenType::EndOfFile) {
                 parseStatement(ast);
             }
         } catch (const std::exception& e) {

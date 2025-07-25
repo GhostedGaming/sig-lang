@@ -16,6 +16,10 @@ void CodeGenContext::emit_bss(const std::string& label, const std::string& data)
     bss_section << label << ": " << data << "\n";
 }
 
+void CodeGenContext::emit_variable(const std::string& label, const std::string& data) {
+    emit_data(label, data);
+}
+
 std::string CodeGenContext::get_optimal_mov(const std::string& dest, const std::string& src) {
     // Optimize common move patterns
     if (src == "0") {

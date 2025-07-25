@@ -5,7 +5,6 @@
 #include <memory>
 #include <optional>
 
-// AST node type definitions
 struct ReturnStatement {
     int value;
 };
@@ -49,7 +48,8 @@ struct ElifClause {
         VariableAssignment,
         PrintVariable,
         struct IfStatement,
-        struct WhileStatement
+        struct WhileStatement,
+        struct ForStatement
     >> block;
 };
 
@@ -67,7 +67,8 @@ struct IfStatement {
         VariableAssignment,
         PrintVariable,
         IfStatement,
-        struct WhileStatement
+        struct WhileStatement,
+        struct ForStatement
     >> thenBlock;
     std::vector<ElifClause> elifClauses;
     std::optional<std::vector<std::variant<
@@ -80,7 +81,8 @@ struct IfStatement {
         VariableAssignment,
         PrintVariable,
         IfStatement,
-        struct WhileStatement
+        struct WhileStatement,
+        struct ForStatement
     >>> elseBlock;
 };
 
@@ -98,7 +100,8 @@ struct WhileStatement {
         VariableAssignment,
         PrintVariable,
         IfStatement,
-        struct WhileStatement
+        struct WhileStatement,
+        struct ForStatement
     >> body;
 };
 
@@ -114,11 +117,30 @@ struct FunctionDefinition {
         VariableAssignment,
         PrintVariable,
         IfStatement,
-        struct WhileStatement
+        struct WhileStatement,
+        struct ForStatement
     >> body;
 };
 
-// Final ASTNode and AST typedefs
+struct ForStatement {
+    std::string initialization;
+    std::string condition;
+    std::string count;
+    std::vector<std::variant<
+        ReturnStatement,
+        PrintStatement,
+        AsmStatement,
+        struct FunctionDefinition,
+        FunctionCall,
+        VariableDeclaration,
+        VariableAssignment,
+        PrintVariable,
+        IfStatement,
+        struct WhileStatement,
+        struct ForStatement
+    >> body;
+};
+
 using ASTNode = std::variant<
     ReturnStatement,
     PrintStatement,
@@ -129,7 +151,8 @@ using ASTNode = std::variant<
     VariableAssignment,
     PrintVariable,
     IfStatement,
-    WhileStatement
+    WhileStatement,
+    ForStatement
 >;
 
 using AST = std::vector<ASTNode>;

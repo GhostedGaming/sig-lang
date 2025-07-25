@@ -23,7 +23,11 @@ set(SOURCES
     src/main.cpp
     src/args.cpp
     src/lexer/private/lexer.cpp
+    src/lexer/private/token.cpp
+    src/lexer/private/lexer_helpers.cpp
+    src/lexer/private/lexer_core.cpp
     src/parser/private/parser.cpp
+    src/parser/private/parser_base.cpp
     src/codegen/private/codegen.cpp
     src/codegen/private/runtime_setup.cpp
     src/codegen/private/code_generator.cpp
