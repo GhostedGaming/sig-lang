@@ -1,32 +1,47 @@
 #pragma once
 #include "../public/parser.hpp"
 #include <lexer/public/token.hpp>
+#include <ast/public/ast.hpp>
 #include <string>
 #include <vector>
+#include <string_view>
 
-class ParserBase {
-protected:
+class Parser {
+private:
     const std::vector<Token>& tokens;
     size_t current;
-    size_t size;
+    const size_t size;
+    std::string current_file_path;
 
-    // Core navigation methods
-    inline bool hasTokens(size_t count = 1) const;
-    inline const Token& peekToken(size_t offset = 0) const;
-    inline void advance(size_t count = 1);
-    inline void expectToken(TokenType expected, const std::string& context = "");
-
-    // Error handling
-    [[noreturn]] void reportError(const std::string& message) const;
-    [[noreturn]] void reportExpectedError(TokenType expected, const std::string& context = "") const;
-    void reportErrorWithRecovery(const std::string& message);
-
-    // Helper methods
+    int parseInteger(std::string_view str) const;
     std::string getErrorContext() const;
-    std::string getSuggestions() const;
     void skipToRecoveryPoint();
-    int parseInteger(const std::string& str) const;
+    std::string getSuggestions() const;
+    [[noreturn]] void reportError(const std::string& message) const;
+    void reportErrorWithRecovery(const std::string& message);
+    [[noreturn]] void reportExpectedError(TokenType expected, const std::string& context = "") const;
+
+    bool hasTokens(size_t count = 1) const;
+    const Token& peekToken(size_t offset = 0) const;
+    void advance(size_t count = 1);
+    void expectToken(TokenType expected, const std::string& context = "");
 
 public:
-    explicit ParserBase(const std::vector<Token>& tokens);
+    explicit Parser(const std::vector<Token>& tokens, const std::string& file_path = "");
+
+    void parseReturnStatement(AST& ast);
+    void parsePrintStatement(AST& ast);
+    void parsePrintlnStatement(AST& ast);
+    void parseFor(AST& ast);
+    void parseFunctionDefinition(AST& ast);
+    void parseFunctionCall(AST& ast);
+    void parseAsmStatement(AST& ast);
+    void parseIfStatement(AST& ast);
+    void parseWhile(AST& ast);
+    void parseVariables(AST& ast);
+    void parseMultiComment(AST& ast);
+    void parseStatementList(AST& ast);
+    void parseStatement(AST& ast);
+    void parseModStatement(AST& ast);
+    AST parse();
 };

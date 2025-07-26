@@ -12,13 +12,14 @@ void print_help(const char* program_name) {
     std::cout << "    --ir           Display generated LLVM IR\n";
 
     std::cout << "OPTIONS:\n";
-    std::cout << "    -o <name>      Output executable name (default: program name)\n";
+    std::cout << "    -o <name>      Output name (executable or .o for object file)\n";
     std::cout << "    -m32           Target 32-bit architecture\n";
     std::cout << "    -h, --help     Show this help message\n";
     std::cout << "    -v, --version  Show version information\n\n";
     std::cout << "EXAMPLES:\n";
     std::cout << "    " << program_name << " hello.sg                    # Creates 'hello' executable\n";
     std::cout << "    " << program_name << " hello.sg -o myprogram       # Creates 'myprogram' executable\n";
+    std::cout << "    " << program_name << " hello.sg -o hello.o         # Creates 'hello.o' object file\n";
     std::cout << "    " << program_name << " program.sg --jit            # Execute with JIT\n";
     std::cout << "    " << program_name << " program.sg --ir             # Show LLVM IR\n\n";
     std::cout << "For more information, visit: https://github.com/GhostedGaming/sig-language\n";
@@ -66,6 +67,12 @@ CompilerArgs parse_args(int argc, char* argv[]) {
                 return args;
             }
             args.output_name = argv[++i];
+            
+            // Check if output name ends with .o (object file only)
+            if (args.output_name.size() >= 2 && 
+                args.output_name.substr(args.output_name.size() - 2) == ".o") {
+                args.object_only = true;
+            }
         }
         else if (arg == "--jit") {
             args.mode = "jit";

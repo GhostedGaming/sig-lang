@@ -67,6 +67,7 @@ const std::array<bool, 256> space_table = make_space_table();
 const std::unordered_map<std::string_view, TokenType> keywords = {
     {"return",   TokenType::KeywordReturn},
     {"print",    TokenType::KeywordPrint},
+    {"println",  TokenType::KeywordPrintln},
     {"asm",      TokenType::KeywordAsm},
     {"pub",      TokenType::KeywordPub},
     {"fn",       TokenType::Function},
@@ -76,6 +77,7 @@ const std::unordered_map<std::string_view, TokenType> keywords = {
     {"elif",     TokenType::KeywordElif},
     {"while",    TokenType::KeywordWhile},
     {"for",      TokenType::KeywordFor},
+    {"mod",      TokenType::KeywordMod},
 };
 
 

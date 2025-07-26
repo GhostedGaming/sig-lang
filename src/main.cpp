@@ -7,6 +7,7 @@
 #include <lexer/public/lexer.hpp>
 #include <parser/public/parser.hpp>
 #include <codegen/public/codegen.hpp>
+#include <modules/public/module_resolver.hpp>
 
 std::string read_file(const std::string& path) {
     std::ifstream in(path);
@@ -36,10 +37,13 @@ int main(int argc, char* argv[]) {
     
     std::string code = read_file(args.input_file);
     auto tokens = tokenize(code);
-    auto ast = parse(tokens);
+    auto ast = parse(tokens, args.input_file);
+    
+    ModuleResolver resolver;
+    auto resolved_ast = resolver.resolve_modules(ast, args.input_file);
     
     CodeGen codegen(args.target_32bit);
-    codegen.compile(ast);
+    codegen.compile(resolved_ast);
     
     if (args.mode == "ir") {
         std::cout << "Generated LLVM IR:\n";
@@ -49,7 +53,11 @@ int main(int argc, char* argv[]) {
         codegen.execute();
     } else {
         std::cout << "Compiling " << args.input_file << " to " << args.output_name << "...\n";
-        codegen.create_executable(args.output_name);
+        if (args.object_only) {
+            codegen.create_object_file(args.output_name);
+        } else {
+            codegen.create_executable(args.output_name);
+        }
     }
 
     return 0;

@@ -1,0 +1,9 @@
+// What Happens
+// is the function public?
+// if yes add it
+// fn mod_example() {
+//     print("mod_example");
+// }
+mod "mod_example_file.sg";
+
+mod_example();

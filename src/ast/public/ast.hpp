@@ -13,6 +13,10 @@ struct PrintStatement {
     std::variant<int, std::string> value;
 };
 
+struct PrintlnStatement {
+    std::variant<int, std::string> value;
+};
+
 struct AsmStatement {
     std::string value;
 };
@@ -34,6 +38,10 @@ struct PrintVariable {
     std::string variableName;
 };
 
+struct ModStatement {
+    std::string filename;
+};
+
 struct ElifClause {
     std::string left;
     std::string op;
@@ -41,12 +49,14 @@ struct ElifClause {
     std::vector<std::variant<
         ReturnStatement,
         PrintStatement,
+        PrintlnStatement,
         AsmStatement,
         struct FunctionDefinition,
         FunctionCall,
         VariableDeclaration,
         VariableAssignment,
         PrintVariable,
+        ModStatement,
         struct IfStatement,
         struct WhileStatement,
         struct ForStatement
@@ -60,12 +70,14 @@ struct IfStatement {
     std::vector<std::variant<
         ReturnStatement,
         PrintStatement,
+        PrintlnStatement,
         AsmStatement,
         struct FunctionDefinition,
         FunctionCall,
         VariableDeclaration,
         VariableAssignment,
         PrintVariable,
+        ModStatement,
         IfStatement,
         struct WhileStatement,
         struct ForStatement
@@ -74,12 +86,14 @@ struct IfStatement {
     std::optional<std::vector<std::variant<
         ReturnStatement,
         PrintStatement,
+        PrintlnStatement,
         AsmStatement,
         struct FunctionDefinition,
         FunctionCall,
         VariableDeclaration,
         VariableAssignment,
         PrintVariable,
+        ModStatement,
         IfStatement,
         struct WhileStatement,
         struct ForStatement
@@ -93,12 +107,14 @@ struct WhileStatement {
     std::vector<std::variant<
         ReturnStatement,
         PrintStatement,
+        PrintlnStatement,
         AsmStatement,
         struct FunctionDefinition,
         FunctionCall,
         VariableDeclaration,
         VariableAssignment,
         PrintVariable,
+        ModStatement,
         IfStatement,
         struct WhileStatement,
         struct ForStatement
@@ -107,18 +123,18 @@ struct WhileStatement {
 
 struct FunctionDefinition {
     std::string name;
-    std::vector<std::variant<
-        
-    >> params;
+    std::vector<std::string> params;
     std::vector<std::variant<
         ReturnStatement,
         PrintStatement,
+        PrintlnStatement,
         AsmStatement,
         struct FunctionDefinition,
         FunctionCall,
         VariableDeclaration,
         VariableAssignment,
         PrintVariable,
+        ModStatement,
         IfStatement,
         struct WhileStatement,
         struct ForStatement
@@ -132,12 +148,14 @@ struct ForStatement {
     std::vector<std::variant<
         ReturnStatement,
         PrintStatement,
+        PrintlnStatement,
         AsmStatement,
         struct FunctionDefinition,
         FunctionCall,
         VariableDeclaration,
         VariableAssignment,
         PrintVariable,
+        ModStatement,
         IfStatement,
         struct WhileStatement,
         struct ForStatement
@@ -147,12 +165,14 @@ struct ForStatement {
 using ASTNode = std::variant<
     ReturnStatement,
     PrintStatement,
+    PrintlnStatement,
     AsmStatement,
     FunctionDefinition,
     FunctionCall,
     VariableDeclaration,
     VariableAssignment,
     PrintVariable,
+    ModStatement,
     IfStatement,
     WhileStatement,
     ForStatement

@@ -5,6 +5,7 @@
 enum class TokenType {
     // Keywords
     KeywordPrint,
+    KeywordPrintln,
     KeywordReturn,
     KeywordAsm,
     KeywordPub,
@@ -14,6 +15,7 @@ enum class TokenType {
     KeywordElif,
     KeywordWhile,
     KeywordFor,
+    KeywordMod,
     
     // Literals
     IntegerLiteral,

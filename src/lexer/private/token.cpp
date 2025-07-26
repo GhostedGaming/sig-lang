@@ -3,6 +3,7 @@
 std::string tokenTypeToString(TokenType type) {
     switch (type) {
         case TokenType::KeywordPrint: return "'print'";
+        case TokenType::KeywordPrintln: return "'println'";
         case TokenType::KeywordReturn: return "'return'";
         case TokenType::KeywordAsm: return "'asm'";
         case TokenType::KeywordPub: return "'pub'";
@@ -12,6 +13,7 @@ std::string tokenTypeToString(TokenType type) {
         case TokenType::KeywordElif: return "'elif'";
         case TokenType::KeywordWhile: return "'while'";
         case TokenType::KeywordFor: return "'for'";
+        case TokenType::KeywordMod: return "'mod'";
         case TokenType::IntegerLiteral: return "integer";
         case TokenType::String: return "string";
         case TokenType::Identifier: return "identifier";

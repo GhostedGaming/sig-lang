@@ -1,0 +1,3 @@
+pub fn mod_example() {
+    print("mod_example");
+}

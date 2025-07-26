@@ -56,6 +56,9 @@ public:
     // Create executable
     void create_executable(const std::string& output_name);
     
+    // Create object file only
+    void create_object_file(const std::string& output_name);
+    
     // Alternative: compile to object file
     void compile_to_object(const std::string& filename);
 };

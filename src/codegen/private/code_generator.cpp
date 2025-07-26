@@ -41,6 +41,17 @@ Value* CodeGen::codegen_stmt(const ASTNode& stmt) {
         }
         else if constexpr (std::is_same_v<T, PrintStatement>) {
             if (std::holds_alternative<int>(s.value)) {
+                Value* format_str = builder->CreateGlobalString("%d");
+                Value* val = ConstantInt::get(Type::getInt32Ty(*context), std::get<int>(s.value));
+                return builder->CreateCall(functions["printf"], {format_str, val});
+            } else {
+                Value* format_str = builder->CreateGlobalString("%s");
+                Value* str = builder->CreateGlobalString(std::get<std::string>(s.value));
+                return builder->CreateCall(functions["printf"], {format_str, str});
+            }
+        }
+        else if constexpr (std::is_same_v<T, PrintlnStatement>) {
+            if (std::holds_alternative<int>(s.value)) {
                 Value* format_str = builder->CreateGlobalString("%d\n");
                 Value* val = ConstantInt::get(Type::getInt32Ty(*context), std::get<int>(s.value));
                 return builder->CreateCall(functions["printf"], {format_str, val});
@@ -108,7 +119,12 @@ Value* CodeGen::codegen_stmt(const ASTNode& stmt) {
             return nullptr;
         }
         else if constexpr (std::is_same_v<T, FunctionDefinition>) {
-            FunctionType* func_type = FunctionType::get(Type::getVoidTy(*context), false);
+            std::vector<Type*> param_types;
+            for (size_t i = 0; i < s.params.size(); ++i) {
+                param_types.push_back(Type::getInt32Ty(*context));
+            }
+            
+            FunctionType* func_type = FunctionType::get(Type::getVoidTy(*context), param_types, false);
             Function* func = Function::Create(func_type, Function::ExternalLinkage, s.name, *module);
             functions[s.name] = func;
             
@@ -117,6 +133,17 @@ Value* CodeGen::codegen_stmt(const ASTNode& stmt) {
             
             BasicBlock* func_entry = BasicBlock::Create(*context, "entry", func);
             builder->SetInsertPoint(func_entry);
+            
+            // Set up parameter variables
+            auto param_iter = func->arg_begin();
+            for (size_t i = 0; i < s.params.size(); ++i, ++param_iter) {
+                Argument* arg = &*param_iter;
+                arg->setName(s.params[i]);
+                
+                AllocaInst* alloca = builder->CreateAlloca(Type::getInt32Ty(*context), nullptr, s.params[i]);
+                builder->CreateStore(arg, alloca);
+                variables[s.params[i]] = alloca;
+            }
             
             for (const auto& stmt : s.body) {
                 codegen_stmt(stmt);
@@ -142,27 +169,27 @@ Value* CodeGen::codegen_stmt(const ASTNode& stmt) {
             return builder->CreateCall(func);
         }
         else if constexpr (std::is_same_v<T, IfStatement>) {
-            // TODO: implement
+            // If statements not yet implemented
             return nullptr;
         }
         else if constexpr (std::is_same_v<T, WhileStatement>) {
-            // TODO: implement
+            // While loops not yet implemented
             return nullptr;
         }
         else if constexpr (std::is_same_v<T, ForStatement>) {
-            // Create basic blocks for the for loop
+            // Set up loop structure
             BasicBlock* for_init = BasicBlock::Create(*context, "for.init", current_function);
             BasicBlock* for_cond = BasicBlock::Create(*context, "for.cond", current_function);
             BasicBlock* for_body = BasicBlock::Create(*context, "for.body", current_function);
             BasicBlock* for_inc = BasicBlock::Create(*context, "for.inc", current_function);
             BasicBlock* for_end = BasicBlock::Create(*context, "for.end", current_function);
             
-            // Jump to initialization
+            // Start the loop
             builder->CreateBr(for_init);
             
             // Initialization block
             builder->SetInsertPoint(for_init);
-            // Create and initialize loop variable
+            // Setup loop counter
             Type* var_type = Type::getInt32Ty(*context);
             AllocaInst* loop_var = builder->CreateAlloca(var_type, nullptr, s.initialization);
             variables[s.initialization] = loop_var;
@@ -196,7 +223,7 @@ Value* CodeGen::codegen_stmt(const ASTNode& stmt) {
             return nullptr;
         }
         else if constexpr (std::is_same_v<T, AsmStatement>) {
-            // TODO: inline assembly support
+            // Inline assembly not yet implemented
             return nullptr;
         }
         
