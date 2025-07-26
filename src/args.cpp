@@ -10,9 +10,10 @@ void print_help(const char* program_name) {
     std::cout << "    (default)      Compile to executable\n";
     std::cout << "    --jit          Execute with LLVM JIT\n";
     std::cout << "    --ir           Display generated LLVM IR\n";
-    std::cout << "    --legacy       Use legacy x86-64 assembly backend\n\n";
+
     std::cout << "OPTIONS:\n";
     std::cout << "    -o <name>      Output executable name (default: program name)\n";
+    std::cout << "    -m32           Target 32-bit architecture\n";
     std::cout << "    -h, --help     Show this help message\n";
     std::cout << "    -v, --version  Show version information\n\n";
     std::cout << "EXAMPLES:\n";
@@ -72,8 +73,8 @@ CompilerArgs parse_args(int argc, char* argv[]) {
         else if (arg == "--ir") {
             args.mode = "ir";
         }
-        else if (arg == "--legacy") {
-            args.mode = "legacy";
+        else if (arg == "-m32") {
+            args.target_32bit = true;
         }
         else if (arg[0] == '-') {
             std::cerr << "Error: Unknown option " << arg << "\n";

@@ -40,7 +40,7 @@ Sig is a modern systems programming language that combines high-level expressive
 - [x] Cross-platform compilation support
 
 ### In Progress
-- [ ] Control flow (if/else, loops) - *Partially implemented*
+- [x] Control flow (if/else, loops)
 - [ ] Expression evaluation and operators
 - [ ] Type system and type checking
 - [ ] Standard library foundation

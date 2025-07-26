@@ -7,6 +7,7 @@ struct CompilerArgs {
     std::string mode = "compile";
     bool show_help = false;
     bool show_version = false;
+    bool target_32bit = false;
 };
 
 CompilerArgs parse_args(int argc, char* argv[]);

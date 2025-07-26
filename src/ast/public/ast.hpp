@@ -108,6 +108,9 @@ struct WhileStatement {
 struct FunctionDefinition {
     std::string name;
     std::vector<std::variant<
+        
+    >> params;
+    std::vector<std::variant<
         ReturnStatement,
         PrintStatement,
         AsmStatement,

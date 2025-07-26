@@ -1,10 +1,10 @@
-#include "../public/llvm_codegen.hpp"
+#include "../public/codegen.hpp"
 #include <llvm/Support/raw_ostream.h>
 #include <iostream>
 
 using namespace llvm;
 
-void LLVMCodeGen::execute() {
+void CodeGen::execute() {
     auto ProcessSymsGenerator = orc::DynamicLibrarySearchGenerator::GetForCurrentProcess(
         jit->getDataLayout().getGlobalPrefix());
     if (!ProcessSymsGenerator) {
@@ -32,7 +32,7 @@ void LLVMCodeGen::execute() {
     std::cout << "Program exited with code: " << result << std::endl;
 }
 
-void LLVMCodeGen::dump_ir() {
+void CodeGen::dump_ir() {
     if (module) {
         module->print(outs(), nullptr);
     } else {

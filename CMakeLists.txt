@@ -28,12 +28,10 @@ set(SOURCES
     src/lexer/private/lexer_core.cpp
     src/parser/private/parser.cpp
     src/parser/private/parser_base.cpp
-    src/codegen/private/codegen.cpp
     src/codegen/private/runtime_setup.cpp
     src/codegen/private/code_generator.cpp
     src/codegen/private/jit_executor.cpp
     src/codegen/private/object_generator.cpp
-    src/codegen/private/legacy_stubs.cpp
 )
 
 # Add the executable

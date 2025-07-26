@@ -1,10 +1,10 @@
-#include "../public/llvm_codegen.hpp"
+#include "../public/codegen.hpp"
 #include <llvm/IR/Verifier.h>
 #include <iostream>
 
 using namespace llvm;
 
-void LLVMCodeGen::compile(const AST& program) {
+void CodeGen::compile(const AST& program) {
     FunctionType* main_type = FunctionType::get(Type::getInt32Ty(*context), false);
     Function* main_func = Function::Create(main_type, Function::ExternalLinkage, "main", *module);
     current_function = main_func;
@@ -31,7 +31,7 @@ void LLVMCodeGen::compile(const AST& program) {
     }
 }
 
-Value* LLVMCodeGen::codegen_stmt(const ASTNode& stmt) {
+Value* CodeGen::codegen_stmt(const ASTNode& stmt) {
     return std::visit([this](const auto& s) -> Value* {
         using T = std::decay_t<decltype(s)>;
         

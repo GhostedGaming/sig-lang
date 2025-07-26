@@ -1,4 +1,4 @@
-#include "../public/llvm_codegen.hpp"
+#include "../public/codegen.hpp"
 #include <llvm/Support/FileSystem.h>
 #include <llvm/MC/TargetRegistry.h>
 #include <llvm/Target/TargetOptions.h>
@@ -10,7 +10,7 @@
 
 using namespace llvm;
 
-void LLVMCodeGen::create_executable(const std::string& output_name) {
+void CodeGen::create_executable(const std::string& output_name) {
     if (!module) {
         std::cerr << "Error: No module compiled" << std::endl;
         return;
@@ -22,8 +22,8 @@ void LLVMCodeGen::create_executable(const std::string& output_name) {
     InitializeAllAsmParsers();
     InitializeAllAsmPrinters();
     
-    auto TargetTriple = Triple::normalize(LLVM_DEFAULT_TARGET_TRIPLE);
-    module->setTargetTriple(TargetTriple);
+    // Use the target triple already configured in the module
+    auto TargetTriple = module->getTargetTriple();
     
     std::string Error;
     auto Target = TargetRegistry::lookupTarget(TargetTriple, Error);
@@ -64,7 +64,11 @@ void LLVMCodeGen::create_executable(const std::string& output_name) {
     
     std::cout << "Object file created: " << obj_filename << std::endl;
     
-    std::string link_command = "gcc -no-pie -o " + output_name + " " + obj_filename;
+    std::string link_command = "gcc -no-pie";
+    if (target_32bit) {
+        link_command += " -m32";
+    }
+    link_command += " -o " + output_name + " " + obj_filename;
     int result = std::system(link_command.c_str());
     
     if (result == 0) {
@@ -75,7 +79,7 @@ void LLVMCodeGen::create_executable(const std::string& output_name) {
     }
 }
 
-void LLVMCodeGen::compile_to_object(const std::string& filename) {
+void CodeGen::compile_to_object(const std::string& filename) {
     std::error_code EC;
     raw_fd_ostream dest(filename + ".ll", EC, sys::fs::OF_None);
     
