@@ -1,0 +1,32 @@
+// Basic struct operations test
+
+// Define a simple Point struct
+struct Point {
+    x: i32,
+    y: i32,
+}
+
+// Define a Color struct  
+struct Color {
+    r: u8,
+    g: u8,
+    b: u8,
+}
+
+fn main() {
+    // Test struct initialization
+    let point: Point = Point { x: 10, y: 20 };
+    let color: Color = Color { r: 255, g: 128, b: 0 };
+    
+    // Test struct member access
+    let x_coord: i32 = point.x;
+    let y_coord: i32 = point.y;
+    let red_value: u8 = color.r;
+    
+    // Print struct members
+    print(x_coord);
+    print(y_coord); 
+    print(red_value);
+    
+    return 0;
+}

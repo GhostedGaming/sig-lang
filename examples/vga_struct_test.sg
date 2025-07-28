@@ -1,0 +1,51 @@
+// VGA buffer struct test for systems programming
+
+// VGA text mode entry (character + color attribute)
+struct VGAEntry {
+    char: u8,     // ASCII character
+    color: u8,    // Color attribute (4-bit foreground + 4-bit background)
+}
+
+// VGA buffer position
+struct VGAPos {
+    row: u32,
+    col: u32,
+}
+
+// VGA screen dimensions
+struct VGAScreen {
+    width: u32,
+    height: u32,
+}
+
+fn kernel_main() {
+    // VGA hardware constants
+    let vga_screen: VGAScreen = VGAScreen { width: 80, height: 25 };
+    let cursor_pos: VGAPos = VGAPos { row: 0, col: 0 };
+    
+    // Create VGA entries for "Hello" message
+    let h_entry: VGAEntry = VGAEntry { char: 72, color: 0x0F };  // 'H' white on black
+    let e_entry: VGAEntry = VGAEntry { char: 101, color: 0x0A }; // 'e' green on black
+    let l_entry: VGAEntry = VGAEntry { char: 108, color: 0x0C }; // 'l' red on black
+    let o_entry: VGAEntry = VGAEntry { char: 111, color: 0x0E }; // 'o' yellow on black
+    
+    // Access VGA buffer at standard address 0xB8000
+    let vga_buffer: *u16 = 0xB8000 as *u16;
+    
+    // Calculate linear position: row * width + col
+    let pos: u32 = cursor_pos.row * vga_screen.width + cursor_pos.col;
+    
+    // In real implementation, would write entries to VGA buffer
+    // For now, just print the character codes to verify struct access
+    print(h_entry.char);
+    print(e_entry.char);
+    print(l_entry.char);
+    print(l_entry.char);
+    print(o_entry.char);
+    
+    // Print color codes too
+    print(h_entry.color);
+    print(e_entry.color);
+    
+    return 0;
+}
