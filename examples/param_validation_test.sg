@@ -1,0 +1,38 @@
+// Test that function parameters receive correct values
+
+// Single parameter function
+fn show_value(x) {
+    print("Received value: ");
+    println(x);
+}
+
+// Two parameter function to test ordering
+fn show_order(first, second) {
+    print("First parameter: ");
+    println(first);
+    print("Second parameter: ");
+    println(second);
+}
+
+// Test different values are passed correctly
+show_value(999);
+show_value(0);
+show_value(5);
+
+// Test parameter ordering
+show_order(100, 200);
+show_order(777, 888);
+
+// Test with more parameters
+fn add_and_print(a, b, c) {
+    print("Adding: ");
+    print(a);
+    print(" + ");
+    print(b);
+    print(" + ");
+    print(c);
+    println(" = result");
+}
+
+add_and_print(1, 2, 3);
+add_and_print(10, 20, 30);

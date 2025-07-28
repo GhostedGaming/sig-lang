@@ -1,0 +1,34 @@
+// Test function parameters with integers only
+
+// Function with one integer parameter
+fn print_number(num) {
+    println(num);
+}
+
+// Function with two integer parameters
+fn print_two_numbers(x, y) {
+    print("First: ");
+    println(x);
+    print("Second: ");
+    println(y);
+}
+
+// Function with three integer parameters
+fn print_three_numbers(a, b, c) {
+    print("A: ");
+    println(a);
+    print("B: ");
+    println(b);
+    print("C: ");
+    println(c);
+}
+
+// Test function calls with integer arguments
+print_number(42);
+print_number(123);
+
+print_two_numbers(5, 10);
+print_two_numbers(15, 20);
+
+print_three_numbers(1, 2, 3);
+print_three_numbers(100, 200, 300);

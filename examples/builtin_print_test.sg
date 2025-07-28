@@ -1,0 +1,15 @@
+// Test built-in functions with print statements
+print("len result: ");
+println(len("hello"));
+
+print("abs result: ");
+println(abs(5));
+
+print("sqrt result: ");
+println(sqrt(16));
+
+print("max result: ");
+println(max(10, 20));
+
+print("min result: ");
+println(min(5, 3));

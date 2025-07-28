@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.20)
 
 project(sig LANGUAGES C CXX)
 
-set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Find LLVM
@@ -30,11 +30,13 @@ set(SOURCES
 src/parser/private/parser_functions.cpp
 src/parser/private/parser_control_flow.cpp
 src/parser/private/parser_statements.cpp
+src/parser/private/parser_expressions.cpp
     src/modules/private/module_resolver.cpp
     src/codegen/private/runtime_setup.cpp
     src/codegen/private/code_generator.cpp
     src/codegen/private/jit_executor.cpp
     src/codegen/private/object_generator.cpp
+    src/runtime/builtin_functions.cpp
 )
 
 # Add the executable

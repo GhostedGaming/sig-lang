@@ -1,0 +1,8 @@
+// Test comparison operators
+print(5 > 3);      // Should print 1 (true)
+print(3 > 5);      // Should print 0 (false)
+print(5 == 5);     // Should print 1 (true)
+print(5 != 3);     // Should print 1 (true)
+print(3 <= 5);     // Should print 1 (true)
+print(5 >= 5);     // Should print 1 (true)
+print(3 < 5);      // Should print 1 (true)

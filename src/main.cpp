@@ -20,8 +20,6 @@ std::string read_file(const std::string& path) {
     return ss.str();
 }
 
-
-
 int main(int argc, char* argv[]) {
     CompilerArgs args = parse_args(argc, argv);
     
@@ -42,7 +40,7 @@ int main(int argc, char* argv[]) {
     ModuleResolver resolver;
     auto resolved_ast = resolver.resolve_modules(ast, args.input_file);
     
-    CodeGen codegen(args.target_32bit);
+    CodeGen codegen(args.target_32bit, args.no_std);
     codegen.compile(resolved_ast);
     
     if (args.mode == "ir") {

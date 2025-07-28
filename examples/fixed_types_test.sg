@@ -1,0 +1,19 @@
+// Test fixed-size integer types
+let a: u8 = 255;
+let b: u16 = 65535;
+let c: u32 = 4294967295;
+let d: u64 = 18446744073709551615;
+
+let e: i8 = 127;
+let f: i16 = 32767;
+let g: i32 = 2147483647;
+let h: i64 = 9223372036854775807;
+
+// Test without explicit types (backward compatibility)
+let x = 42;
+let y = true;
+
+// Print some values
+println e;
+println f;
+println x;

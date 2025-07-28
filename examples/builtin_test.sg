@@ -1,0 +1,37 @@
+// Test all built-in functions
+println("=== Built-in Functions Test ===");
+
+// Test len() function
+string test_str = "Hello, World!";
+println("String: " + test_str);
+println("Length: " + len(test_str));
+
+string empty_str = "";
+println("Empty string length: " + len(empty_str));
+
+// Test abs() function
+double negative = -42.5;
+double positive = 17.3;
+println("abs(-42.5) = " + abs(negative));
+println("abs(17.3) = " + abs(positive));
+println("abs(-10) = " + abs(-10));
+
+// Test sqrt() function
+double num = 16.0;
+println("sqrt(16.0) = " + sqrt(num));
+println("sqrt(25) = " + sqrt(25));
+println("sqrt(2) = " + sqrt(2));
+
+// Test max() function
+double a = 10.5;
+double b = 7.2;
+println("max(10.5, 7.2) = " + max(a, b));
+println("max(-5, -10) = " + max(-5, -10));
+println("max(100, 200) = " + max(100, 200));
+
+// Test min() function
+println("min(10.5, 7.2) = " + min(a, b));
+println("min(-5, -10) = " + min(-5, -10));
+println("min(100, 200) = " + min(100, 200));
+
+println("=== All tests completed ===");

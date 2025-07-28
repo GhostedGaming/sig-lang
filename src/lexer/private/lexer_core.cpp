@@ -28,9 +28,15 @@ std::vector<Token> LexerCore::tokenize() {
             continue;
         }
         
-        // Handle integer literals
+        // Handle integer literals and hex literals
         if (is_digit(c)) {
-            process_integer();
+            // Check for hex literal starting with 0x
+            if (c == '0' && position + 1 < size && 
+                (data[position + 1] == 'x' || data[position + 1] == 'X')) {
+                process_hex_literal();
+            } else {
+                process_integer();
+            }
             continue;
         }
         
@@ -67,14 +73,54 @@ void LexerCore::process_identifier() {
 
 void LexerCore::process_integer() {
     size_t start = position;
+    bool has_decimal = false;
     
     // Read digits
     while (position < size && is_digit(static_cast<unsigned char>(data[position]))) {
         ++position;
     }
     
+    // Check for decimal point
+    if (position < size && data[position] == '.') {
+        // Check if there's a digit after the decimal point
+        if (position + 1 < size && is_digit(static_cast<unsigned char>(data[position + 1]))) {
+            has_decimal = true;
+            ++position; // Skip the decimal point
+            
+            // Read decimal digits
+            while (position < size && is_digit(static_cast<unsigned char>(data[position]))) {
+                ++position;
+            }
+        }
+    }
+    
     std::string number(data + start, position - start);
-    tokens.emplace_back(TokenType::IntegerLiteral, number);
+    
+    if (has_decimal) {
+        tokens.emplace_back(TokenType::FloatLiteral, number);
+    } else {
+        tokens.emplace_back(TokenType::IntegerLiteral, number);
+    }
+}
+
+void LexerCore::process_hex_literal() {
+    size_t start = position;
+    
+    // Skip "0x" or "0X"
+    position += 2;
+    
+    // Read hex digits
+    while (position < size && is_hex_digit(static_cast<unsigned char>(data[position]))) {
+        ++position;
+    }
+    
+    // Check if we have at least one hex digit after 0x
+    if (position == start + 2) {
+        report_lexer_error("Invalid hexadecimal literal - missing digits after '0x'", position, *input_ref);
+    }
+    
+    std::string hex_number(data + start, position - start);
+    tokens.emplace_back(TokenType::HexLiteral, hex_number);
 }
 
 void LexerCore::process_string() {
@@ -143,6 +189,10 @@ void LexerCore::process_single_char_operators() {
             tokens.emplace_back(TokenType::Semicolon);
             ++position;
             break;
+        case ':':
+            tokens.emplace_back(TokenType::Colon);
+            ++position;
+            break;
         case ',':
             tokens.emplace_back(TokenType::Comma);
             ++position;
@@ -169,6 +219,9 @@ void LexerCore::process_single_char_operators() {
             if (position + 1 < size && data[position + 1] == '=') {
                 tokens.emplace_back(TokenType::LessThanEqual);
                 position += 2;
+            } else if (position + 1 < size && data[position + 1] == '<') {
+                tokens.emplace_back(TokenType::LeftShift);
+                position += 2;
             } else {
                 tokens.emplace_back(TokenType::LessThan);
                 ++position;
@@ -177,6 +230,9 @@ void LexerCore::process_single_char_operators() {
         case '>':
             if (position + 1 < size && data[position + 1] == '=') {
                 tokens.emplace_back(TokenType::GreaterThanEqual);
+                position += 2;
+            } else if (position + 1 < size && data[position + 1] == '>') {
+                tokens.emplace_back(TokenType::RightShift);
                 position += 2;
             } else {
                 tokens.emplace_back(TokenType::GreaterThan);
@@ -188,7 +244,8 @@ void LexerCore::process_single_char_operators() {
                 tokens.emplace_back(TokenType::And);
                 position += 2;
             } else {
-                report_lexer_error("Unexpected character '&' - did you mean '&&' for logical AND?", position, *input_ref);
+                tokens.emplace_back(TokenType::BitwiseAnd);
+                ++position;
             }
             break;
         case '|':
@@ -196,7 +253,8 @@ void LexerCore::process_single_char_operators() {
                 tokens.emplace_back(TokenType::Or);
                 position += 2;
             } else {
-                report_lexer_error("Unexpected character '|' - did you mean '||' for logical OR?", position, *input_ref);
+                tokens.emplace_back(TokenType::BitwiseOr);
+                ++position;
             }
             break;
         case '/':
@@ -226,8 +284,34 @@ void LexerCore::process_single_char_operators() {
                     report_lexer_error("Unterminated multiline comment - missing closing '*/'", position, *input_ref);
                 }
             } else {
-                report_lexer_error("Unexpected character '/' - did you mean '//' for a comment?", position, *input_ref);
+                // Division operator
+                tokens.emplace_back(TokenType::Divide);
+                ++position;
             }
+            break;
+        case '+':
+            tokens.emplace_back(TokenType::Plus);
+            ++position;
+            break;
+        case '-':
+            tokens.emplace_back(TokenType::Minus);
+            ++position;
+            break;
+        case '*':
+            tokens.emplace_back(TokenType::Multiply);
+            ++position;
+            break;
+        case '%':
+            tokens.emplace_back(TokenType::Modulo);
+            ++position;
+            break;
+        case '^':
+            tokens.emplace_back(TokenType::BitwiseXor);
+            ++position;
+            break;
+        case '.':
+            tokens.emplace_back(TokenType::Dot);
+            ++position;
             break;
         default:
             // Provide context-specific suggestions for common mistakes

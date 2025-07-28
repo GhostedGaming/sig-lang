@@ -16,9 +16,23 @@ enum class TokenType {
     KeywordWhile,
     KeywordFor,
     KeywordMod,
+    KeywordStruct,
+    
+    // Type keywords
+    U8,
+    U16,
+    U32,
+    U64,
+    I8,
+    I16,
+    I32,
+    I64,
     
     // Literals
     IntegerLiteral,
+    HexLiteral,
+    BooleanLiteral,
+    FloatLiteral,
     String,
     
     // Identifiers
@@ -27,6 +41,25 @@ enum class TokenType {
     
     // Operators
     Equal,
+    Plus,
+    Minus,
+    Multiply,
+    Divide,
+    Modulo,
+    
+    // Bitwise operators
+    BitwiseAnd,    // &
+    BitwiseOr,     // |
+    BitwiseXor,    // ^
+    LeftShift,     // <<
+    RightShift,    // >>
+    
+    // Pointer operators  
+    Asterisk,      // * (dereference and pointer type)
+    AddressOf,     // & (address-of, now handled by BitwiseAnd)
+    
+    // Type casting
+    KeywordAs,     // as (type casting)
     
     // Logical Operators
     And,           // &&
@@ -45,6 +78,8 @@ enum class TokenType {
     LeftBrace,
     RightBrace,
     Semicolon,
+    Colon,
+    Dot,          // . (member access)
     Quote,
     
     // Comments

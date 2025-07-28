@@ -64,11 +64,21 @@ void CodeGen::create_executable(const std::string& output_name) {
     
     std::cout << "Object file created: " << obj_filename << std::endl;
     
+    // Create builtin functions object file 
+    std::string builtin_obj = "sig_runtime.o";
+    
+    // Get current working directory and find the src path
+    std::string create_runtime_cmd = "gcc -c src/runtime/builtin_functions.cpp -o " + builtin_obj;
+    if (target_32bit) {
+        create_runtime_cmd = "gcc -m32 -c src/runtime/builtin_functions.cpp -o " + builtin_obj;
+    }
+    std::system(create_runtime_cmd.c_str());
+    
     std::string link_command = "gcc -no-pie";
     if (target_32bit) {
         link_command += " -m32";
     }
-    link_command += " -o " + output_name + " " + obj_filename;
+    link_command += " -o " + output_name + " " + obj_filename + " " + builtin_obj + " -lm";
     int result = std::system(link_command.c_str());
     
     if (result == 0) {

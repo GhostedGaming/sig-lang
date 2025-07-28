@@ -9,6 +9,7 @@ struct CompilerArgs {
     bool show_version = false;
     bool target_32bit = false;
     bool object_only = false;
+    bool no_std = false;
 };
 
 CompilerArgs parse_args(int argc, char* argv[]);

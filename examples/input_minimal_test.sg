@@ -1,0 +1,3 @@
+// Test input function
+input("Enter your name: ");
+println("Input test complete");

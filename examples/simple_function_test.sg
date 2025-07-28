@@ -1,0 +1,27 @@
+// Test basic function parameters
+
+// Function with one integer parameter
+fn print_number(num) {
+    println(num);
+}
+
+// Function with string parameter
+fn say_hello(message) {
+    print("Message: ");
+    println(message);
+}
+
+// Function with boolean parameter
+fn print_bool(flag) {
+    println(flag);
+}
+
+// Test calls
+print_number(5);
+print_number(10);
+
+say_hello("Hello World");
+say_hello("Test Message");
+
+print_bool(true);
+print_bool(false);

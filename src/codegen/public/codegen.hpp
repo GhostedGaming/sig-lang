@@ -16,7 +16,7 @@
 #include <memory>
 #include <unordered_map>
 #include <string>
-#include <ast/public/ast.hpp>
+#include <ast/public/ast_simple.hpp>
 
 class CodeGen {
 private:
@@ -35,14 +35,22 @@ private:
     // Target architecture
     bool target_32bit = false;
     
+    // Standard library configuration
+    bool no_std = false;
+    
     // Helper methods
     llvm::Value* codegen_stmt(const ASTNode& stmt);
+    llvm::Value* codegen_binary_expr(const BinaryExpression& expr);
+    llvm::Value* codegen_unary_expr(const UnaryExpression& expr);
+    llvm::Value* codegen_value(const std::variant<int, double, bool, std::string, TypedValue>& value);
+    llvm::Value* codegen_expression(const Expression& expr);
     void setup_runtime_functions();
     void configure_target_architecture();
     
 public:
     CodeGen();
     explicit CodeGen(bool target_32bit);
+    explicit CodeGen(bool target_32bit, bool no_std);
     ~CodeGen() = default;
     
     // Configuration

@@ -2,6 +2,8 @@
 #include <iostream>
 #include <cstdlib>
 #include <charconv>
+#include <limits>
+#include <cstdint>
 
 Parser::Parser(const std::vector<Token>& tokens, const std::string& file_path)
     : tokens(tokens), current(0), size(tokens.size()), current_file_path(file_path) {}
@@ -13,6 +15,109 @@ int Parser::parseInteger(std::string_view str) const {
         reportError("Invalid integer format: '" + std::string(str) + "'. Expected a valid number like 42 or -123.");
     }
     return value;
+}
+
+double Parser::parseDouble(std::string_view str) const {
+    double value;
+    auto [ptr, ec] = std::from_chars(str.data(), str.data() + str.size(), value);
+    if (ec != std::errc{}) {
+        reportError("Invalid float format: '" + std::string(str) + "'. Expected a valid number like 3.14 or -2.5.");
+    }
+    return value;
+}
+
+uint64_t Parser::parseHexLiteral(std::string_view str) const {
+    // Remove "0x" prefix
+    if (str.size() < 3 || (str[0] != '0' || (str[1] != 'x' && str[1] != 'X'))) {
+        reportError("Invalid hex format: '" + std::string(str) + "'. Expected format like 0x1234 or 0xABCD.");
+    }
+    
+    str = str.substr(2); // Skip "0x"
+    uint64_t value;
+    auto [ptr, ec] = std::from_chars(str.data(), str.data() + str.size(), value, 16);
+    if (ec != std::errc{}) {
+        reportError("Invalid hex format: '" + std::string(str) + "'. Expected valid hex digits (0-9, A-F).");
+    }
+    return value;
+}
+
+SigType Parser::parseTypeAnnotation() {
+    if (!hasTokens()) {
+        reportError("Expected type annotation after ':'");
+    }
+    
+    const auto& typeToken = peekToken();
+    advance();
+    
+    switch (typeToken.type) {
+        case TokenType::U8: return SigType::U8;
+        case TokenType::U16: return SigType::U16;
+        case TokenType::U32: return SigType::U32;
+        case TokenType::U64: return SigType::U64;
+        case TokenType::I8: return SigType::I8;
+        case TokenType::I16: return SigType::I16;
+        case TokenType::I32: return SigType::I32;
+        case TokenType::I64: return SigType::I64;
+        default:
+            reportError("Invalid type annotation. Expected u8, u16, u32, u64, i8, i16, i32, or i64");
+    }
+}
+
+TypedValue Parser::createTypedValue(SigType type, uint64_t value) const {
+    TypedValue typedValue;
+    typedValue.type = type;
+    
+    switch (type) {
+        case SigType::U8:
+            if (value > UINT8_MAX) {
+                reportError("Value " + std::to_string(value) + " is too large for u8 (max: " + std::to_string(UINT8_MAX) + ")");
+            }
+            typedValue.value = static_cast<uint8_t>(value);
+            break;
+        case SigType::U16:
+            if (value > UINT16_MAX) {
+                reportError("Value " + std::to_string(value) + " is too large for u16 (max: " + std::to_string(UINT16_MAX) + ")");
+            }
+            typedValue.value = static_cast<uint16_t>(value);
+            break;
+        case SigType::U32:
+            if (value > UINT32_MAX) {
+                reportError("Value " + std::to_string(value) + " is too large for u32 (max: " + std::to_string(UINT32_MAX) + ")");
+            }
+            typedValue.value = static_cast<uint32_t>(value);
+            break;
+        case SigType::U64:
+            typedValue.value = value;
+            break;
+        case SigType::I8:
+            if (value > INT8_MAX) {
+                reportError("Value " + std::to_string(value) + " is too large for i8 (max: " + std::to_string(INT8_MAX) + ")");
+            }
+            typedValue.value = static_cast<int8_t>(value);
+            break;
+        case SigType::I16:
+            if (value > INT16_MAX) {
+                reportError("Value " + std::to_string(value) + " is too large for i16 (max: " + std::to_string(INT16_MAX) + ")");
+            }
+            typedValue.value = static_cast<int16_t>(value);
+            break;
+        case SigType::I32:
+            if (value > INT32_MAX) {
+                reportError("Value " + std::to_string(value) + " is too large for i32 (max: " + std::to_string(INT32_MAX) + ")");
+            }
+            typedValue.value = static_cast<int32_t>(value);
+            break;
+        case SigType::I64:
+            if (value > INT64_MAX) {
+                reportError("Value " + std::to_string(value) + " is too large for i64 (max: " + std::to_string(INT64_MAX) + ")");
+            }
+            typedValue.value = static_cast<int64_t>(value);
+            break;
+        default:
+            reportError("Invalid type for createTypedValue");
+    }
+    
+    return typedValue;
 }
 
 std::string Parser::getErrorContext() const {
@@ -244,6 +349,13 @@ void Parser::parseStatement(AST& ast) {
             break;
         case TokenType::KeywordPrintln:
             parsePrintlnStatement(ast);
+            break;
+        case TokenType::IntegerLiteral:
+        case TokenType::FloatLiteral:
+        case TokenType::BooleanLiteral:
+            // Check if this is part of an arithmetic expression
+            parseExpression(ast);
+            expectToken(TokenType::Semicolon, "after expression");
             break;
         default:
             reportError("Unexpected " + tokenTypeToString(token.type) + " at start of statement.\n"

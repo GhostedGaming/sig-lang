@@ -1,0 +1,12 @@
+// Test logical operators
+print(true && true);   // Should print 1 (true)
+print(true && false);  // Should print 0 (false)
+print(false || true);  // Should print 1 (true)
+print(false || false); // Should print 0 (false)
+print(!true);          // Should print 0 (false)
+print(!false);         // Should print 1 (true)
+
+// Test complex expressions
+print((5 > 3) && (2 < 4));    // Should print 1 (true)
+print((5 < 3) || (2 < 4));    // Should print 1 (true)
+print(!(5 == 3));             // Should print 1 (true)

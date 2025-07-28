@@ -1,0 +1,8 @@
+// Minimal test of built-in functions
+len("test");
+abs(5);
+sqrt(16);
+max(10, 20);
+min(5, 3);
+
+println("Functions called successfully");

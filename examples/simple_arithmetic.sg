@@ -1,0 +1,18 @@
+// Simple tests for the new types
+print(42);
+print(3.14);
+print(true);
+print(false);
+
+println(99);
+println(2.718);
+println(true);
+println(false);
+
+let x = 10;
+let y = 3.5;
+let flag = true;
+
+print(x);
+print(y);
+print(flag);

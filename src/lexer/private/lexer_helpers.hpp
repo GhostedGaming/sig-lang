@@ -8,18 +8,21 @@
 constexpr std::array<bool, 256> make_identifier_start_table();
 constexpr std::array<bool, 256> make_identifier_char_table();
 constexpr std::array<bool, 256> make_digit_table();
+constexpr std::array<bool, 256> make_hex_digit_table();
 constexpr std::array<bool, 256> make_space_table();
 
 // Static tables (will be initialized by implementation)
 extern const std::array<bool, 256> identifier_start_table;
 extern const std::array<bool, 256> identifier_char_table;
 extern const std::array<bool, 256> digit_table;
+extern const std::array<bool, 256> hex_digit_table;
 extern const std::array<bool, 256> space_table;
 
 // Fast character classification functions
 inline bool is_identifier_start(unsigned char c) { return identifier_start_table[c]; }
 inline bool is_identifier_char(unsigned char c) { return identifier_char_table[c]; }
 inline bool is_digit(unsigned char c) { return digit_table[c]; }
+inline bool is_hex_digit(unsigned char c) { return hex_digit_table[c]; }
 inline bool is_space(unsigned char c) { return space_table[c]; }
 
 // Keywords mapping

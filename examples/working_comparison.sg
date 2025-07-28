@@ -1,0 +1,2 @@
+// Working comparison test using return statements
+let result = 5 > 3;

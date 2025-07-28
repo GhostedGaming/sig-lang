@@ -1,0 +1,19 @@
+// Test input() function
+println("=== Input Function Test ===");
+
+// Test input with prompt
+string name = input("Enter your name: ");
+println("Hello, " + name + "!");
+
+// Test input with different prompts
+string age = input("Enter your age: ");
+println("You are " + age + " years old.");
+
+string city = input("What city are you from? ");
+println("You're from " + city + ".");
+
+// Test empty prompt
+string response = input("");
+println("You entered: " + response);
+
+println("=== Input test completed ===");

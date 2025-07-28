@@ -1,7 +1,7 @@
 #pragma once
 #include "../public/parser.hpp"
 #include <lexer/public/token.hpp>
-#include <ast/public/ast.hpp>
+#include <ast/public/ast_simple.hpp>
 #include <string>
 #include <vector>
 #include <string_view>
@@ -14,6 +14,10 @@ private:
     std::string current_file_path;
 
     int parseInteger(std::string_view str) const;
+    double parseDouble(std::string_view str) const;
+    uint64_t parseHexLiteral(std::string_view str) const;
+    SigType parseTypeAnnotation();
+    TypedValue createTypedValue(SigType type, uint64_t value) const;
     std::string getErrorContext() const;
     void skipToRecoveryPoint();
     std::string getSuggestions() const;
@@ -43,5 +47,14 @@ public:
     void parseStatementList(AST& ast);
     void parseStatement(AST& ast);
     void parseModStatement(AST& ast);
+    void parseExpression(AST& ast);
+    BinaryExpression parseArithmeticExpression();
+    Expression parseFactor();
+    std::variant<UnaryExpression, Expression> parseUnaryExpression();
+    Expression parseArithmeticTerm();
+    Expression parseAdditiveExpression();
+    BinaryExpression parseComparisonExpression();
+    BinaryExpression parseLogicalAndExpression();
+    BinaryExpression parseLogicalOrExpression();
     AST parse();
 };

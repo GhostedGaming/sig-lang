@@ -1,0 +1,3 @@
+// Simple test without types - just hex literals
+let x = 0xff;
+println x;

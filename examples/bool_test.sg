@@ -1,0 +1,13 @@
+// Test boolean literals
+print(true);
+print(false);
+
+println(true);
+println(false);
+
+// Test boolean variable assignment
+let isValid = true;
+let isComplete = false;
+
+print(isValid);
+println(isComplete);

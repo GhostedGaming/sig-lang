@@ -1,0 +1,16 @@
+// Test hexadecimal literals
+let addr: u32 = 0xb8000;
+let mask: u16 = 0xff00;
+let small: u8 = 0xab;
+let large: u64 = 0xdeadbeefcafebabe;
+
+// Hex without explicit type (defaults to u32)
+let color = 0xff0000;
+
+// Mixed case hex
+let mixed = 0xABCDef12;
+
+// Print values
+println addr;
+println mask;
+println color;

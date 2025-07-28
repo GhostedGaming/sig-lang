@@ -65,14 +65,30 @@ void Parser::parseFunctionCall(AST& ast) {
 
     expectToken(TokenType::LeftParen, "after function name. Example: " + functionName + "();");
     
-    // For now, skip any parameters until we get to the closing paren
-    // TODO: Properly parse and handle function call arguments
-    while (hasTokens() && peekToken().type != TokenType::RightParen) {
-        advance();
+    std::vector<Expression> arguments;
+    
+    // Parse arguments if they exist
+    if (hasTokens() && peekToken().type != TokenType::RightParen) {
+        do {
+            // Parse each argument as a factor (literal or identifier)
+            auto argument = parseFactor();
+            arguments.push_back(argument);
+            
+            // Check for comma indicating more arguments
+            if (hasTokens() && peekToken().type == TokenType::Comma) {
+                advance(); // consume the comma
+                // Expect another argument after comma
+                if (!hasTokens() || peekToken().type == TokenType::RightParen) {
+                    reportError("Expected argument after comma in function call");
+                }
+            } else {
+                break; // No more arguments
+            }
+        } while (hasTokens() && peekToken().type != TokenType::RightParen);
     }
     
     expectToken(TokenType::RightParen, "to close function call");
     expectToken(TokenType::Semicolon, "to end function call statement");
 
-    ast.emplace_back(FunctionCall{functionName});
+    ast.emplace_back(FunctionCall{functionName, std::move(arguments)});
 }

@@ -46,6 +46,25 @@ constexpr std::array<bool, 256> make_digit_table() {
     return table;
 }
 
+constexpr std::array<bool, 256> make_hex_digit_table() {
+    std::array<bool, 256> table{};
+    
+    // Set 0-9 as valid hex digits
+    for (int i = '0'; i <= '9'; ++i) {
+        table[i] = true;
+    }
+    // Set a-f as valid hex digits
+    for (int i = 'a'; i <= 'f'; ++i) {
+        table[i] = true;
+    }
+    // Set A-F as valid hex digits
+    for (int i = 'A'; i <= 'F'; ++i) {
+        table[i] = true;
+    }
+    
+    return table;
+}
+
 constexpr std::array<bool, 256> make_space_table() {
     std::array<bool, 256> table{};
     
@@ -62,6 +81,7 @@ constexpr std::array<bool, 256> make_space_table() {
 const std::array<bool, 256> identifier_start_table = make_identifier_start_table();
 const std::array<bool, 256> identifier_char_table = make_identifier_char_table();
 const std::array<bool, 256> digit_table = make_digit_table();
+const std::array<bool, 256> hex_digit_table = make_hex_digit_table();
 const std::array<bool, 256> space_table = make_space_table();
 
 const std::unordered_map<std::string_view, TokenType> keywords = {
@@ -78,6 +98,18 @@ const std::unordered_map<std::string_view, TokenType> keywords = {
     {"while",    TokenType::KeywordWhile},
     {"for",      TokenType::KeywordFor},
     {"mod",      TokenType::KeywordMod},
+    {"struct",   TokenType::KeywordStruct},
+    {"as",       TokenType::KeywordAs},
+    {"true",     TokenType::BooleanLiteral},
+    {"false",    TokenType::BooleanLiteral},
+    {"u8",       TokenType::U8},
+    {"u16",      TokenType::U16},
+    {"u32",      TokenType::U32},
+    {"u64",      TokenType::U64},
+    {"i8",       TokenType::I8},
+    {"i16",      TokenType::I16},
+    {"i32",      TokenType::I32},
+    {"i64",      TokenType::I64},
 };
 
 

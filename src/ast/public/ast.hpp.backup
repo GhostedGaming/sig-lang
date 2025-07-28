@@ -1,0 +1,352 @@
+#pragma once
+#include <variant>
+#include <vector>
+#include <string>
+#include <memory>
+#include <optional>
+#include <cstdint>
+
+// Type system definitions
+enum class SigType {
+    Untyped,    // For backward compatibility
+    U8, U16, U32, U64,
+    I8, I16, I32, I64,
+    Bool,
+    Float,
+    String,
+    Pointer,    // Pointer type
+    Struct      // Struct type
+};
+
+// Pointer type structure
+struct PointerType {
+    std::unique_ptr<SigType> pointed_type;  // Type being pointed to
+    
+    PointerType(SigType type) : pointed_type(std::make_unique<SigType>(type)) {}
+    PointerType(const PointerType& other) : pointed_type(std::make_unique<SigType>(*other.pointed_type)) {}
+    PointerType& operator=(const PointerType& other) {
+        if (this != &other) {
+            pointed_type = std::make_unique<SigType>(*other.pointed_type);
+        }
+        return *this;
+    }
+};
+
+// Typed value that can hold different integer types
+struct TypedValue {
+    SigType type;
+    std::variant<
+        uint8_t, uint16_t, uint32_t, uint64_t,  // Unsigned integers
+        int8_t, int16_t, int32_t, int64_t,      // Signed integers
+        bool, double, std::string               // Other types
+    > value;
+};
+
+struct ReturnStatement {
+    int value;
+};
+
+// Forward declarations for expressions
+struct BinaryExpression;
+struct UnaryExpression;
+struct DereferenceExpression;
+struct AddressOfExpression;
+struct CastExpression;
+struct MemberAccessExpression;
+struct PointerArithmeticExpression;
+struct StructInitialization;
+
+// Expression type that can be a simple value or complex expression  
+// Use smart pointers for recursive types to avoid incomplete type issues
+using Expression = std::variant<
+    std::monostate,
+    int, double, bool, std::string, TypedValue,
+    std::unique_ptr<BinaryExpression>,
+    std::unique_ptr<UnaryExpression>,
+    std::unique_ptr<DereferenceExpression>,
+    std::unique_ptr<AddressOfExpression>,
+    std::unique_ptr<CastExpression>,
+    std::unique_ptr<MemberAccessExpression>,
+    std::unique_ptr<PointerArithmeticExpression>,
+    std::unique_ptr<StructInitialization>
+>;
+
+struct PrintStatement {
+    Expression value;
+};
+
+struct PrintlnStatement {
+    Expression value;
+};
+
+struct AsmStatement {
+    std::string value;
+};
+
+struct FunctionCall {
+    std::string function_name;
+    std::vector<std::variant<int, double, bool, std::string>> arguments;
+};
+
+struct VariableDeclaration {
+    std::string var_name;
+    std::optional<SigType> type;  // Optional type annotation
+};
+
+struct VariableAssignment {
+    std::string var_name;
+    std::variant<int, double, bool, std::string, TypedValue> value;
+    std::optional<SigType> type;  // Optional type annotation for declaration
+};
+
+struct PrintVariable {
+    std::string variableName;
+};
+
+struct ModStatement {
+    std::string filename;
+};
+
+enum class SigBinaryOperator {
+    Add,
+    Subtract,
+    Multiply,
+    Divide,
+    Modulo,
+    // Comparison operators
+    Equal,
+    NotEqual,
+    LessThan,
+    LessThanEqual,
+    GreaterThan,
+    GreaterThanEqual,
+    // Logical operators
+    And,
+    Or,
+    Not,
+    // Bitwise operators
+    BitwiseAnd,
+    BitwiseOr,
+    BitwiseXor,
+    LeftShift,
+    RightShift
+};
+
+struct BinaryExpression {
+    Expression left;
+    SigBinaryOperator operator_type;
+    Expression right;
+};
+
+struct UnaryExpression {
+    SigBinaryOperator operator_type; // For NOT operator
+    Expression operand;
+};
+
+// New AST nodes for systems programming features
+struct DereferenceExpression {
+    Expression pointer;
+};
+
+struct AddressOfExpression {
+    std::string variable_name;
+};
+
+struct CastExpression {
+    Expression value;
+    SigType target_type;
+};
+
+struct MemberAccessExpression {
+    std::string object_name;
+    std::string member_name;
+};
+
+struct PointerArithmeticExpression {
+    std::string pointer_name;
+    SigBinaryOperator operator_type; // Add or Subtract
+    Expression offset;
+};
+
+// Struct field definition
+struct StructField {
+    std::string name;
+    SigType type;
+};
+
+// Struct definition
+struct StructDefinition {
+    std::string name;
+    std::vector<StructField> fields;
+};
+
+// Struct field value for initialization
+struct StructFieldValue {
+    std::string name;
+    Expression value;
+};
+
+// Struct initialization
+struct StructInitialization {
+    std::string struct_name;
+    std::vector<StructFieldValue> field_values;
+};
+
+struct ElifClause {
+    std::string left;
+    std::string op;
+    std::string right;
+    std::vector<std::variant<
+        ReturnStatement,
+        PrintStatement,
+        PrintlnStatement,
+        AsmStatement,
+        struct FunctionDefinition,
+        FunctionCall,
+        VariableDeclaration,
+        VariableAssignment,
+        PrintVariable,
+        ModStatement,
+        BinaryExpression,
+        UnaryExpression,
+        struct IfStatement,
+        struct WhileStatement,
+        struct ForStatement
+    >> block;
+};
+
+struct IfStatement {
+    std::string left;
+    std::string op;
+    std::string right;
+    std::vector<std::variant<
+        ReturnStatement,
+        PrintStatement,
+        PrintlnStatement,
+        AsmStatement,
+        struct FunctionDefinition,
+        FunctionCall,
+        VariableDeclaration,
+        VariableAssignment,
+        PrintVariable,
+        ModStatement,
+        BinaryExpression,
+        UnaryExpression,
+        IfStatement,
+        struct WhileStatement,
+        struct ForStatement
+    >> thenBlock;
+    std::vector<ElifClause> elifClauses;
+    std::optional<std::vector<std::variant<
+        ReturnStatement,
+        PrintStatement,
+        PrintlnStatement,
+        AsmStatement,
+        struct FunctionDefinition,
+        FunctionCall,
+        VariableDeclaration,
+        VariableAssignment,
+        PrintVariable,
+        ModStatement,
+        BinaryExpression,
+        UnaryExpression,
+        IfStatement,
+        struct WhileStatement,
+        struct ForStatement
+    >>> elseBlock;
+};
+
+struct WhileStatement {
+    std::string left;
+    std::string op;
+    std::string right;
+    std::vector<std::variant<
+        ReturnStatement,
+        PrintStatement,
+        PrintlnStatement,
+        AsmStatement,
+        struct FunctionDefinition,
+        FunctionCall,
+        VariableDeclaration,
+        VariableAssignment,
+        PrintVariable,
+        ModStatement,
+        BinaryExpression,
+        UnaryExpression,
+        IfStatement,
+        struct WhileStatement,
+        struct ForStatement
+    >> body;
+};
+
+struct FunctionDefinition {
+    std::string name;
+    std::vector<std::string> params;
+    std::vector<std::variant<
+        ReturnStatement,
+        PrintStatement,
+        PrintlnStatement,
+        AsmStatement,
+        struct FunctionDefinition,
+        FunctionCall,
+        VariableDeclaration,
+        VariableAssignment,
+        PrintVariable,
+        ModStatement,
+        BinaryExpression,
+        UnaryExpression,
+        IfStatement,
+        struct WhileStatement,
+        struct ForStatement
+    >> body;
+};
+
+struct ForStatement {
+    std::string initialization;
+    std::string condition;
+    std::string count;
+    std::vector<std::variant<
+        ReturnStatement,
+        PrintStatement,
+        PrintlnStatement,
+        AsmStatement,
+        struct FunctionDefinition,
+        FunctionCall,
+        VariableDeclaration,
+        VariableAssignment,
+        PrintVariable,
+        ModStatement,
+        BinaryExpression,
+        UnaryExpression,
+        IfStatement,
+        struct WhileStatement,
+        struct ForStatement
+    >> body;
+};
+
+// Forward declaration for ASTNode 
+using ASTNode = std::variant<
+    ReturnStatement,
+    PrintStatement,
+    PrintlnStatement,
+    AsmStatement,
+    FunctionDefinition,
+    FunctionCall,
+    VariableDeclaration,
+    VariableAssignment,
+    PrintVariable,
+    ModStatement,
+    BinaryExpression,
+    UnaryExpression,
+    IfStatement,
+    WhileStatement,
+    ForStatement,
+    StructDefinition,
+    DereferenceExpression,
+    AddressOfExpression,
+    CastExpression,
+    MemberAccessExpression,
+    PointerArithmeticExpression
+>;
+
+using AST = std::vector<ASTNode>;

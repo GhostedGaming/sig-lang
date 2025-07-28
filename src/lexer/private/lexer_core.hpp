@@ -15,6 +15,7 @@ private:
     // Token creation methods
     void process_identifier();
     void process_integer();
+    void process_hex_literal();
     void process_string();
     void process_single_char_operators();
     void process_double_char_operators();

@@ -14,6 +14,7 @@ void print_help(const char* program_name) {
     std::cout << "OPTIONS:\n";
     std::cout << "    -o <name>      Output name (executable or .o for object file)\n";
     std::cout << "    -m32           Target 32-bit architecture\n";
+    std::cout << "    --no-std       Disable standard library (for OS/kernel development)\n";
     std::cout << "    -h, --help     Show this help message\n";
     std::cout << "    -v, --version  Show version information\n\n";
     std::cout << "EXAMPLES:\n";
@@ -82,6 +83,9 @@ CompilerArgs parse_args(int argc, char* argv[]) {
         }
         else if (arg == "-m32") {
             args.target_32bit = true;
+        }
+        else if (arg == "--no-std") {
+            args.no_std = true;
         }
         else if (arg[0] == '-') {
             std::cerr << "Error: Unknown option " << arg << "\n";

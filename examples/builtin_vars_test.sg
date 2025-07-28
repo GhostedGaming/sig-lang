@@ -1,0 +1,21 @@
+// Test built-in functions by storing results in variables
+let test_str = "hello";
+let len_result = len(test_str);
+print("Length of hello: ");
+println(len_result);
+
+let abs_result = abs(5);
+print("abs(5): ");
+println(abs_result);
+
+let sqrt_result = sqrt(16);
+print("sqrt(16): ");
+println(sqrt_result);
+
+let max_result = max(10, 20);
+print("max(10, 20): ");
+println(max_result);
+
+let min_result = min(5, 3);
+print("min(5, 3): ");
+println(min_result);

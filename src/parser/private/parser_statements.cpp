@@ -77,6 +77,28 @@ void Parser::parsePrintStatement(AST& ast) {
             reportError("Integer literal is missing its value. This appears to be a tokenizer issue.");
         }
     }
+    else if (token.type == TokenType::FloatLiteral) {
+        if (token.value.has_value()) {
+            double value = parseDouble(token.value.value());
+            advance();
+            expectToken(TokenType::RightParen, "after float to end print statement");
+            expectToken(TokenType::Semicolon, "to end print statement");
+            ast.emplace_back(PrintStatement{value});
+        } else {
+            reportError("Float literal is missing its value. This appears to be a tokenizer issue.");
+        }
+    }
+    else if (token.type == TokenType::BooleanLiteral) {
+        if (token.value.has_value()) {
+            bool value = token.value.value() == "true";
+            advance();
+            expectToken(TokenType::RightParen, "after boolean to end print statement");
+            expectToken(TokenType::Semicolon, "to end print statement");
+            ast.emplace_back(PrintStatement{value});
+        } else {
+            reportError("Boolean literal is missing its value. This appears to be a tokenizer issue.");
+        }
+    }
     else if (token.type == TokenType::Identifier) {
         if (token.value.has_value()) {
             std::string variableName = token.value.value();
@@ -144,6 +166,28 @@ void Parser::parsePrintlnStatement(AST& ast) {
             reportError("Integer literal is missing its value. This appears to be a tokenizer issue.");
         }
     }
+    else if (token.type == TokenType::FloatLiteral) {
+        if (token.value.has_value()) {
+            double value = parseDouble(token.value.value());
+            advance();
+            expectToken(TokenType::RightParen, "after float to end println statement");
+            expectToken(TokenType::Semicolon, "to end println statement");
+            ast.emplace_back(PrintlnStatement{value});
+        } else {
+            reportError("Float literal is missing its value. This appears to be a tokenizer issue.");
+        }
+    }
+    else if (token.type == TokenType::BooleanLiteral) {
+        if (token.value.has_value()) {
+            bool value = token.value.value() == "true";
+            advance();
+            expectToken(TokenType::RightParen, "after boolean to end println statement");
+            expectToken(TokenType::Semicolon, "to end println statement");
+            ast.emplace_back(PrintlnStatement{value});
+        } else {
+            reportError("Boolean literal is missing its value. This appears to be a tokenizer issue.");
+        }
+    }
     else if (token.type == TokenType::Identifier) {
         if (token.value.has_value()) {
             std::string variableName = token.value.value();
@@ -205,6 +249,13 @@ void Parser::parseVariables(AST& ast) {
     const std::string variableName = peekToken().value.value_or("unnamed");
     advance();
 
+    // Check for optional type annotation
+    std::optional<SigType> typeAnnotation;
+    if (hasTokens() && peekToken().type == TokenType::Colon) {
+        advance(); // Skip colon
+        typeAnnotation = parseTypeAnnotation();
+    }
+
     if (hasTokens() && peekToken().type == TokenType::Equal) {
         advance();
 
@@ -217,15 +268,60 @@ void Parser::parseVariables(AST& ast) {
 
         const auto& valueToken = peekToken();
 
-        if (valueToken.type == TokenType::IntegerLiteral) {
+        if (valueToken.type == TokenType::HexLiteral) {
+            if (valueToken.value.has_value()) {
+                uint64_t value = parseHexLiteral(valueToken.value.value());
+                advance();
+                expectToken(TokenType::Semicolon, "to end variable assignment");
+
+                if (typeAnnotation.has_value()) {
+                    TypedValue typedValue = createTypedValue(typeAnnotation.value(), value);
+                    ast.emplace_back(VariableAssignment{variableName, typedValue, typeAnnotation});
+                } else {
+                    // Default to u32 for hex literals without explicit type
+                    TypedValue typedValue = createTypedValue(SigType::U32, value);
+                    ast.emplace_back(VariableAssignment{variableName, typedValue, SigType::U32});
+                }
+            } else {
+                reportError("Hex literal is missing its value. This appears to be a tokenizer issue.");
+            }
+        }
+        else if (valueToken.type == TokenType::IntegerLiteral) {
             if (valueToken.value.has_value()) {
                 int value = parseInteger(valueToken.value.value());
                 advance();
                 expectToken(TokenType::Semicolon, "to end variable assignment");
 
-                ast.emplace_back(VariableAssignment{variableName, value});
+                if (typeAnnotation.has_value()) {
+                    TypedValue typedValue = createTypedValue(typeAnnotation.value(), static_cast<uint64_t>(value));
+                    ast.emplace_back(VariableAssignment{variableName, typedValue, typeAnnotation});
+                } else {
+                    ast.emplace_back(VariableAssignment{variableName, value, std::nullopt});
+                }
             } else {
                 reportError("Integer literal is missing its value. This appears to be a tokenizer issue.");
+            }
+        }
+        else if (valueToken.type == TokenType::FloatLiteral) {
+            if (valueToken.value.has_value()) {
+                double value = parseDouble(valueToken.value.value());
+                advance();
+                expectToken(TokenType::Semicolon, "to end variable assignment");
+
+                ast.emplace_back(VariableAssignment{variableName, value, std::nullopt});
+            } else {
+                reportError("Float literal is missing its value. This appears to be a tokenizer issue.");
+            }
+        }
+        else if (valueToken.type == TokenType::BooleanLiteral) {
+            if (valueToken.value.has_value()) {
+                bool value = valueToken.value.value() == "true";
+                advance();
+                expectToken(TokenType::Semicolon, "to end variable assignment");
+
+                ast.emplace_back(VariableAssignment{variableName, value, std::nullopt});
+            } else {
+                reportError("Boolean literal is missing its value. This appears to be a tokenizer issue.");
             }
         }
         else if (valueToken.type == TokenType::Quote) {
@@ -269,7 +365,7 @@ void Parser::parseVariables(AST& ast) {
     } else {
         expectToken(TokenType::Semicolon, "to end variable declaration");
 
-        ast.emplace_back(VariableDeclaration{variableName});
+        ast.emplace_back(VariableDeclaration{variableName, typeAnnotation});
     }
 }
 

@@ -1,5 +1,5 @@
 #pragma once
-#include <ast/public/ast.hpp>
+#include <ast/public/ast_simple.hpp>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>

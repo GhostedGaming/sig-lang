@@ -1,0 +1,17 @@
+// Test float literals
+print(3.14);
+print(0.5);
+print(123.456);
+
+println(2.718);
+println(0.0);
+println(999.999);
+
+// Test float variable assignment
+let pi = 3.14159;
+let temperature = 98.6;
+let zero = 0.0;
+
+print(pi);
+println(temperature);
+print(zero);

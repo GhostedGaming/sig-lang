@@ -1,0 +1,35 @@
+// Final comprehensive test of all built-in functions
+println("=== Built-in Functions Test ===");
+
+// Test len() function
+len("Hello World");
+len("");
+len("test123");
+
+// Test abs() function  
+abs(42);
+abs(0);
+abs(100);
+
+// Test sqrt() function
+sqrt(0);
+sqrt(1);
+sqrt(4);
+sqrt(9);
+sqrt(16);
+sqrt(25);
+
+// Test max() function
+max(1, 2);
+max(10, 5);
+max(0, 0);
+max(100, 200);
+
+// Test min() function
+min(1, 2);
+min(10, 5);
+min(0, 0);
+min(100, 200);
+
+println("All built-in functions called successfully!");
+println("Check the executable output to verify functionality.");

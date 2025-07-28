@@ -1,0 +1,36 @@
+// Test functions with parameters
+
+// Simple function with one parameter
+fn greet(name) {
+    print("Hello, ");
+    print(name);
+    println("!");
+}
+
+// Function with two parameters
+fn print_two(x, y) {
+    print("First: ");
+    println(x);
+    print("Second: ");
+    println(y);
+}
+
+// Function with multiple parameters
+fn print_three(a, b, c) {
+    print("A: ");
+    println(a);
+    print("B: ");
+    println(b);
+    print("C: ");
+    println(c);
+}
+
+// Test function calls with arguments
+greet("Alice");
+greet("Bob");
+
+print_two(5, 3);
+print_two(10, 20);
+
+print_three(1, 2, 3);
+print_three(10, 15, 25);
